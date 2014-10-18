@@ -573,6 +573,10 @@ Debug.Assert( foundLoc );
 			}
 		}
 
+		public	override	void	MsgGameTurnInit( int msgTime, OWNER whichSide, int turnNumber )
+		{
+			mMessageCtr.SendMsgMessageHandled( mWhichSide, MessageType.GameTurnInit, turnNumber );
+		}
 
 	}
 }

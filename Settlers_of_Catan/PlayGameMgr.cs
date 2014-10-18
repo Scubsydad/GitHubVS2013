@@ -22,7 +22,7 @@ namespace Settlers_of_Catan
 
 		SideLogic[]		mPlayerLogics;
 		MessageCenter	mMessageCtr;
-		int				mNumPlayers, mHexNumChosen, mSettlementBuildIndex, mSettlementId;
+		int				mTurnNumber = 0, mNumPlayers, mHexNumChosen, mSettlementBuildIndex, mSettlementId;
 		int[]			mClickLocRadius;
 		Point[]			mClickLocCenterPoint;
 		ArrayList		mTabStorage = new ArrayList(), mPlacementOrder = new ArrayList(), mTurnOrder = new ArrayList();
@@ -37,7 +37,7 @@ namespace Settlers_of_Catan
 		Point[][]		mHexDrawGfxLocs = new Point[19][];
 		PathFinder		mPathFinder;
 
-		public PlayGameMgr( MessageCenter msgCenter, int numPlayers, CONTROL[] control, MapManager mapMgr, PictureBox pictBox, TabControl stateExplainTabs )	:	base ( OWNER.SYSTEM, false )
+		public PlayGameMgr( MessageCenter msgCenter, int numPlayers, CONTROL[] control, MapManager mapMgr, PictureBox pictBox, TabControl stateExplainTabs )	:	base ( OWNER.MANAGER, false )
 		{
 			mMessageCtr = msgCenter;
 			mNumPlayers = numPlayers;
@@ -275,6 +275,10 @@ Debug.Assert( firstInQueue == whichSide );				//	always ensure the first one in 
 			{
 				_SendPickSettlementMessage();
 			}
+			else
+			{
+				mMessageCtr.SendMsgGameTurnInit( OWNER.MANAGER, mTurnNumber );
+			}
 		}
 
 		private void _SendPickSettlementMessage()
@@ -285,8 +289,9 @@ Debug.Assert( firstInQueue == whichSide );				//	always ensure the first one in 
 
 		public	override	void	MsgMessageHandled( int msgTime, OWNER sender, MessageType whichMessage, int miscVal )
 		{
-			if ( whichMessage == MessageType.PickSettlement )		{	mMessageCtr.SendMsgPickRoadWay( sender );		}
-			else if ( whichMessage == MessageType.PickRoadWay )		{	_RoadWayPlacementUpdate( sender );		}
+			if ( whichMessage == MessageType.PickSettlement )		{	mMessageCtr.SendMsgPickRoadWay( sender );	}
+			else if ( whichMessage == MessageType.PickRoadWay )		{	_RoadWayPlacementUpdate( sender );			}
+			else if ( whichMessage == MessageType.GameTurnInit )	{	_GameTurnInitUpdate( sender, miscVal );		}
 		}
 
 		private void        _NewStateChangeRequest( PlayGameMgr.STATE whichState, OWNER forSide, int settlementId, int miscVal )
@@ -406,87 +411,111 @@ Debug.Assert( false ); // we need a solution to plot all 'roadway ends' in the f
 			_NewStateChangeRequest( whichState, sender, settlementId, miscVal );
 		}
 
-		void _PlayGamePictMouseDown(object sender, MouseEventArgs e)
+		private void _MouseClickPicHex( int mouseX, int mouseY )
 		{
-			int				i = 0;
-			int				mouseX = e.X;
-			int				mouseY = e.Y;
 			Point[]			pointArray;
-			CITY_DIR		clickDir = CITY_DIR.INVALID;
-			Point			clickLoc;
-			int				xDelta, yDelta, dist;
-
-			if ( mCurrentState == STATE.PICK_BUILD_HEX )
+			for ( int i = 0; i < mGfxLocHexArray.Length; ++i )
 			{
-				for ( ; i < mGfxLocHexArray.Length; ++i )
+				pointArray = mHexDrawGfxLocs[i];	// use the draw locs rather than the build locs to reduce the click size
+				if ( ( mouseX >= pointArray[(int)CITY_DIR.NORTH_WEST].X ) &&	//	left edge...
+					 ( mouseX <= pointArray[(int)CITY_DIR.NORTH_EAST].X ) &&	//	right edge...
+					 ( mouseY >= pointArray[(int)CITY_DIR.NORTH_WEST].Y ) &&	//	top edge
+					 ( mouseY <= pointArray[(int)CITY_DIR.SOUTH_EAST].Y ) )		//	bottom edge
 				{
-					pointArray = mHexDrawGfxLocs[i];	// use the draw locs rather than the build locs to reduce the click size
-					if ( ( mouseX >= pointArray[(int)CITY_DIR.NORTH_WEST].X ) &&	//	left edge...
-						 ( mouseX <= pointArray[(int)CITY_DIR.NORTH_EAST].X ) &&	//	right edge...
-						 ( mouseY >= pointArray[(int)CITY_DIR.NORTH_WEST].Y ) &&	//	top edge
-						 ( mouseY <= pointArray[(int)CITY_DIR.SOUTH_EAST].Y ) )		//	bottom edge
+					HexInfo hexInfo = mGfxLocHexArray[i];
+					if ( Support.IsQuestionTrue( string.Format("Are you sure you want to choose hex # {0}?\n\nTerrain\t : {1}\nResource\t : {2}\nDie Roll\t : {3}", i, hexInfo.GetTerrain().ToString(), hexInfo.GetEarnResource().ToString(), hexInfo.GetDieRoll() ), "Please Confirm" ) )
 					{
-						HexInfo hexInfo = mGfxLocHexArray[i];
-						if ( Support.IsQuestionTrue( string.Format("Are you sure you want to choose hex # {0}?\n\nTerrain\t : {1}\nResource\t : {2}\nDie Roll\t : {3}", i, hexInfo.GetTerrain().ToString(), hexInfo.GetEarnResource().ToString(), hexInfo.GetDieRoll() ), "Please Confirm" ) )
-						{
-							_NewStateChangeRequest( STATE.PICK_BUILD_CORNER, mStateOwner, -1, i );
-							break;
-						}
-					}
-				}
-			}
-			else if ( mCurrentState == STATE.PICK_BUILD_CORNER )
-			{
-				for ( ; i < (int)CITY_DIR._size; ++i )
-				{
-					clickLoc = mBuilLocs[mHexNumChosen][i];
-					xDelta = ( clickLoc.X - mouseX );
-					yDelta = ( clickLoc.Y - mouseY );
-					dist = (int)Math.Sqrt( (double)(( xDelta * xDelta ) + ( yDelta * yDelta )) );
-					if ( dist <= mClickLocRadius[i] )
-					{
-						clickDir = (CITY_DIR)i;
+						_NewStateChangeRequest( STATE.PICK_BUILD_CORNER, mStateOwner, -1, i );
 						break;
 					}
 				}
-				if ( clickDir != CITY_DIR.INVALID )
+			}
+		}
+		private void _MouseClickPickCorner( int mouseX, int mouseY )
+		{
+			Point		clickLoc;
+			int			xDelta, yDelta, dist;
+			CITY_DIR	clickDir = CITY_DIR.INVALID;
+			for ( int i = 0; i < (int)CITY_DIR._size; ++i )
+			{
+				clickLoc = mBuilLocs[mHexNumChosen][i];
+				xDelta = ( clickLoc.X - mouseX );
+				yDelta = ( clickLoc.Y - mouseY );
+				dist = (int)Math.Sqrt( (double)(( xDelta * xDelta ) + ( yDelta * yDelta )) );
+				if ( dist <= mClickLocRadius[i] )
 				{
-					if ( Support.IsQuestionTrue( string.Format("Please confirm you wish to place your settlement in the\n{0} corner of hex # {1}?", clickDir.ToString(), mHexNumChosen ), "Please Confirm" ) )
-					{
-						OWNER currOwner = mStateOwner;				//	back up the owner before we erase the state
-						 _SetState( STATE.DORMANT, OWNER.INVALID );	//	disable the state BEFORE we send the message, or we'll lose the results of the 'confirm settlement' call
-						 mPlayerLogics[(int)currOwner].ConfirmSettlement( mHexNumChosen, clickDir );
-					}
-
+					clickDir = (CITY_DIR)i;
+					break;
 				}
 			}
-			else if ( mCurrentState == STATE.PICK_ROAD_WAY_LOC )
+			if ( clickDir != CITY_DIR.INVALID )
 			{
-				for ( ; i < (int)CITY_DIR._size; ++i )
+				if ( Support.IsQuestionTrue( string.Format("Please confirm you wish to place your settlement in the\n{0} corner of hex # {1}?", clickDir.ToString(), mHexNumChosen ), "Please Confirm" ) )
 				{
-					clickLoc = mClickLocCenterPoint[i];
-					xDelta = ( clickLoc.X - mouseX );
-					yDelta = ( clickLoc.Y - mouseY );
-					dist = (int)Math.Sqrt( (double)(( xDelta * xDelta ) + ( yDelta * yDelta )) );
-					if ( dist <= mClickLocRadius[i] )
-					{
-						clickDir = (CITY_DIR)i;
-						break;
-					}
+					OWNER currOwner = mStateOwner;				//	back up the owner before we erase the state
+					_SetState( STATE.DORMANT, OWNER.INVALID );	//	disable the state BEFORE we send the message, or we'll lose the results of the 'confirm settlement' call
+					mPlayerLogics[(int)currOwner].ConfirmSettlement( mHexNumChosen, clickDir );
 				}
-				if ( clickDir != CITY_DIR.INVALID )
+			}
+		}
+		private void _MouseClickPickRoad( int mouseX, int mouseY )
+		{
+			Point		clickLoc;
+			int			xDelta, yDelta, dist;
+			CITY_DIR	clickDir = CITY_DIR.INVALID;
+			for ( int i = 0; i < (int)CITY_DIR._size; ++i )
+			{
+				clickLoc = mClickLocCenterPoint[i];
+				xDelta = ( clickLoc.X - mouseX );
+				yDelta = ( clickLoc.Y - mouseY );
+				dist = (int)Math.Sqrt( (double)(( xDelta * xDelta ) + ( yDelta * yDelta )) );
+				if ( dist <= mClickLocRadius[i] )
 				{
-					if ( Support.IsQuestionTrue( string.Format("Please confirm you wish to place your ROAD off of\nSettlement ID {0} going in the {1} direction?", mSettlementId, clickDir.ToString() ), "Please Confirm" ) )
-					{
-						OWNER currOwner = mStateOwner;				//	back up the owner before we erase the state
-						 _SetState( STATE.DORMANT, OWNER.INVALID );	//	disable the state BEFORE we send the message, or we'll lose the results of the 'confirm settlement' call
-						 mPlayerLogics[(int)currOwner].ConfirmRoadway( mSettlementId, clickDir );
-					}
-
+					clickDir = (CITY_DIR)i;
+					break;
+				}
+			}
+			if ( clickDir != CITY_DIR.INVALID )
+			{
+				if ( Support.IsQuestionTrue( string.Format("Please confirm you wish to place your ROAD off of\nSettlement ID {0} going in the {1} direction?", mSettlementId, clickDir.ToString() ), "Please Confirm" ) )
+				{
+					OWNER currOwner = mStateOwner;				//	back up the owner before we erase the state
+						_SetState( STATE.DORMANT, OWNER.INVALID );	//	disable the state BEFORE we send the message, or we'll lose the results of the 'confirm settlement' call
+						mPlayerLogics[(int)currOwner].ConfirmRoadway( mSettlementId, clickDir );
 				}
 			}
 		}
 
+		void _PlayGamePictMouseDown(object sender, MouseEventArgs e)
+		{
+			switch ( mCurrentState )
+			{
+				case	STATE.PICK_BUILD_HEX		:	_MouseClickPicHex( e.X, e.Y );		break;
+				case	STATE.PICK_BUILD_CORNER		:	_MouseClickPickCorner( e.X, e.Y );	break;
+				case	STATE.PICK_ROAD_WAY_LOC		:	_MouseClickPickRoad( e.X, e.Y );	break;
+				default								:	Debug.Assert( false );				break;
+			}
+		}
+
+		public	override	void	MsgGameTurnInit( int msgTime, OWNER whichSide, int turnNumber )
+		{
+			mMessageCtr.SendMsgGameTurnInit( (OWNER)mTurnOrder[0], turnNumber );	//	fire off the first turn init message for the side who goes first
+		}
+
+		private	void	_GameTurnInitUpdate( OWNER whichSide, int turnNumber )
+		{
+			int		playerIndex = mTurnOrder.IndexOf( whichSide );
+Debug.Assert( playerIndex != -1 );																	//	ensure we got a valid index out of above array
+Debug.Assert( turnNumber == mTurnNumber );
+			if ( ++playerIndex == mNumPlayers )				//	was that the final player that needs to call back and confirm they've initialized their turn?
+			{
+				++playerIndex;
+			}
+			else
+			{
+				mMessageCtr.SendMsgGameTurnInit( (OWNER)mTurnOrder[playerIndex], turnNumber );		//	daisy chain each init based on completion of previous player
+			}		
+		}
 
 	}
 }

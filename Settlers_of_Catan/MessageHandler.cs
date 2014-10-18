@@ -59,6 +59,8 @@ namespace Settlers_of_Catan
 
 					case	MessageType.AddSettlement		:	MsgAddSettlement( timeStamp, _GetMessageSender(), _GetMessageData( MsgParam.UniqueId ), _GetMessageData( MsgParam.MiscVal ) );	break;
 
+					case	MessageType.GameTurnInit		:	MsgGameTurnInit( timeStamp, _GetMessageOwner(), _GetMessageData( MsgParam.MiscVal ) );					break;
+
 					case	MessageType.InitDieRollSet		:	MsgInitDieRollSet( timeStamp, _GetMessageData( MsgParam.UniqueId ), _GetMessageData( MsgParam.MiscVal ) );	break;
 
 					case	MessageType.InitDieRollRequest	:	MsgInitDieRollRequest( timeStamp, (_GetMessageData( MsgParam.MiscVal ) != 0 ) );	break;
@@ -98,6 +100,7 @@ Debug.Assert( !mAssertIfNotHandled );
 		public	virtual	void	MsgRenderMap( int msgTime ) { _ConfirmHandled(); }
 		public	virtual	void	MsgAddRoadWay( int msgTime, OWNER side, int settlementId, CITY_DIR whichDir ) { _ConfirmHandled(); }
 		public	virtual	void	MsgAddSettlement( int msgTime, OWNER side, int settlementId, int numActive ) { _ConfirmHandled(); }
+		public	virtual	void	MsgGameTurnInit( int msgTime, OWNER whichSide, int turnNumber ) { _ConfirmHandled(); }
 		public	virtual	void	MsgInitDieRollRequest( int msgTime, bool wantRandom ) { _ConfirmHandled(); }
 		public	virtual	void	MsgInitPortLocRequest( int msgTime, bool wantRandom ) { _ConfirmHandled(); }
 		public	virtual	void	MsgInitTerrainRequest( int msgTime, bool wantRandom ) { _ConfirmHandled(); }

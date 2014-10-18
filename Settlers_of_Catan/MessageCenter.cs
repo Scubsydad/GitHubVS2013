@@ -17,6 +17,8 @@ namespace Settlers_of_Catan
 		AddRoadWay,
 		AddSettlement,
 
+		GameTurnInit,
+
 		InitDieRollRequest,
 		InitPortLocRequest,
 		InitTerrainRequest,				//	message to initialize the map
@@ -111,7 +113,8 @@ namespace Settlers_of_Catan
 			__AddMessageType( MessageType.InitTerrainRequest, miscValDesc );
 			__AddMessageType( MessageType.InitDieRollRequest, miscValDesc );
 			__AddMessageType( MessageType.InitPortLocRequest, miscValDesc );
-
+			__AddMessageType( MessageType.GameTurnInit, miscValDesc );
+			
 			MsgParam[] hexLocVallDesc = new MsgParam[] { MsgParam.UniqueId, MsgParam.MiscVal };
 			__AddMessageType( MessageType.InitDieRollSet, hexLocVallDesc );
 			__AddMessageType( MessageType.InitTerrainSet, hexLocVallDesc );
@@ -489,12 +492,12 @@ Debug.Assert( foundItem, "Attempting to extract invalid unqiue param MsgParam fr
 			return ( returnVal );
 		}
 
-		public  void		PostMessage( )
+		private  void		_PostMessage( )
 		{
-			PostMessage( mLastAddedMsgId );
+			_PostMessage( mLastAddedMsgId );
 		}
 
-		public  void		PostMessage( int uniqueIdIndex )
+		private  void		_PostMessage( int uniqueIdIndex )
 		{
 			Message		message = _GetMessageByUniqueId(uniqueIdIndex, false );
 			mLastAddedMsgId = -1;	//	destroy this immediately upon post request, so its not left 'dangling' during broadcasts
@@ -765,8 +768,8 @@ Debug.Assert( ( mBeenPosted == 0 ), "Already posted message" );
 
 		public void	SendMsgRenderMap( ) 
 		{
-			_AddMessage( OWNER.SYSTEM, MessageType.RenderMap, 0 );	//	render the map to reflect the last choice made by settlement placement
-			PostMessage();
+			_AddMessage( OWNER.MANAGER, MessageType.RenderMap, 0 );	//	render the map to reflect the last choice made by settlement placement
+			_PostMessage();
 		}
 
 		public void SendMsgAddRoadWay( OWNER side, int settlementId, CITY_DIR whichDir )  
@@ -775,7 +778,7 @@ Debug.Assert( ( mBeenPosted == 0 ), "Already posted message" );
 			_SetMessageData( MsgParam.UniqueId, settlementId );
 			_SetMessageData( MsgParam.MiscVal, (int)whichDir );
 			_SetMessageData( MsgParam.SenderSide, (int)side );		//	we need to broadcast who sent it, because everybody should listen...
-			PostMessage();
+			_PostMessage();
 		}
 
 		public void SendMsgAddSettlement( OWNER side, int settlementId, int numSettlements ) 
@@ -784,35 +787,35 @@ Debug.Assert( ( mBeenPosted == 0 ), "Already posted message" );
 			_SetMessageData( MsgParam.UniqueId, settlementId );
 			_SetMessageData( MsgParam.MiscVal, numSettlements );
 			_SetMessageData( MsgParam.SenderSide, (int)side );		//	we need to broadcast who sent it, because everybody should listen...
-			PostMessage();
+			_PostMessage();
 		}
 
 		public void SendMsgInitDieRollRequest( int wantRandomOnOff ) 
 		{
 			_AddMessage( OWNER._size, MessageType.InitDieRollRequest, 0 );
 			_SetMessageData( MsgParam.MiscVal, wantRandomOnOff );
-			PostMessage();
+			_PostMessage();
 		}
 
 		public void SendMsgInitPortLocRequest( int wantRandomOnOff ) 
 		{
 			_AddMessage( OWNER._size, MessageType.InitPortLocRequest, 0 );
 			_SetMessageData( MsgParam.MiscVal, wantRandomOnOff );
-			PostMessage();
+			_PostMessage();
 		}
 
 		public void SendMsgInitTerrainRequest( int wantRandomOnOff ) 
 		{
 			_AddMessage( OWNER._size, MessageType.InitTerrainRequest, 0 );
 			_SetMessageData( MsgParam.MiscVal, wantRandomOnOff );
-			PostMessage();
+			_PostMessage();
 		}
 
 		public void SendMsgRandomNumSeed( int randSeedVal ) 
 		{
 			_AddMessage( OWNER._size, MessageType.RandomNumSeed, 0 );
 			_SetMessageData( MsgParam.MiscVal, randSeedVal );
-			PostMessage();
+			_PostMessage();
 		}
 
 		public void SendMsgInitTerrainSet( int uniqueId, TERRAIN terrain ) 
@@ -820,7 +823,7 @@ Debug.Assert( ( mBeenPosted == 0 ), "Already posted message" );
 			_AddMessage( OWNER._size, MessageType.InitTerrainSet, 0 );
 			_SetMessageData( MsgParam.UniqueId, uniqueId );
 			_SetMessageData( MsgParam.MiscVal, (int)terrain );
-			PostMessage();
+			_PostMessage();
 		}
 
 		public void SendMsgInitDieRollSet( int uniqueId, int dieRoll ) 
@@ -828,7 +831,7 @@ Debug.Assert( ( mBeenPosted == 0 ), "Already posted message" );
 			_AddMessage( OWNER._size, MessageType.InitDieRollSet, 0 );
 			_SetMessageData( MsgParam.UniqueId, uniqueId );
 			_SetMessageData( MsgParam.MiscVal, dieRoll );
-			PostMessage();
+			_PostMessage();
 		}
 
 		public void SendMsgInitPortLocSet( PORT portEnum, RESOURCE portResource ) 
@@ -836,44 +839,51 @@ Debug.Assert( ( mBeenPosted == 0 ), "Already posted message" );
 			_AddMessage( OWNER._size, MessageType.InitPortLocSet, 0 );
 			_SetMessageData( MsgParam.PortId, (int)portEnum );
 			_SetMessageData( MsgParam.Resource, (int)portResource );
-			PostMessage();
+			_PostMessage();
 		}
 
 		public void SendMsgInitGameSide( OWNER side ) 
 		{
 			_AddMessage( side, MessageType.InitGameSide, 0 );
-			PostMessage();
+			_PostMessage();
 		}
 
 		public void SendMsgPickRoadWay( OWNER side ) 
 		{
 			_AddMessage( side, MessageType.PickRoadWay, 0 );		//	each settlement placed should fire off the next guy in line
-			PostMessage();
+			_PostMessage();
+		}
+
+		public void SendMsgGameTurnInit( OWNER whichSide, int turnNum )
+		{
+			_AddMessage( whichSide, MessageType.GameTurnInit, 0 );
+			_SetMessageData( MsgParam.MiscVal, turnNum );
+			_PostMessage();
 		}
 
 		public void SendMsgPickSettlement( OWNER side ) 
 		{
 			_AddMessage( side, MessageType.PickSettlement, 0 );	//	each settlement placed should fire off the next guy in line
-			PostMessage();
+			_PostMessage();
 		}
 
 		public void SendMsgMessageHandled( OWNER sender, MessageType whichMessage, int miscAssocVal ) 
 		{
-			_AddMessage( OWNER.SYSTEM, MessageType.MessageHandled, 0 );
+			_AddMessage( OWNER.MANAGER, MessageType.MessageHandled, 0 );
 			_SetMessageData( MsgParam.UniqueId, (int)whichMessage );
 			_SetMessageData( MsgParam.MiscVal, miscAssocVal );
 			_SetMessageData( MsgParam.SenderSide, (int)sender );		//	we need to broadcast who sent it, because everybody should listen...
-			PostMessage();
+			_PostMessage();
 		}
 
 		public void SendMsgStateRequest( OWNER sender, PlayGameMgr.STATE whichState, int settlementid, int miscAssocVal ) 
 		{
-			_AddMessage( OWNER.SYSTEM, MessageType.StateRequest, 0 );
+			_AddMessage( OWNER.MANAGER, MessageType.StateRequest, 0 );
 			_SetMessageData( MsgParam.UniqueId, (int)whichState );
 			_SetMessageData( MsgParam.SettlementId, settlementid );
 			_SetMessageData( MsgParam.MiscVal, miscAssocVal );
 			_SetMessageData( MsgParam.SenderSide, (int)sender );		//	we need to broadcast who sent it, because everybody should listen...
-			PostMessage();
+			_PostMessage();
 		}
 
 	}

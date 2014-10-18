@@ -174,7 +174,14 @@ namespace Settlers_of_Catan
 			string ownerDesc = "";
 			if ( owner != OWNER.INVALID )
 			{
-				ownerDesc = owner.ToString();
+				if ( owner == OWNER.MANAGER )
+				{
+					ownerDesc = "System";
+				}
+				else
+				{
+					ownerDesc = owner.ToString();
+				}
 			}
 			return ( ownerDesc );
 		}
@@ -364,12 +371,17 @@ namespace Settlers_of_Catan
 
 		public	override	void	MsgRenderMap( int msgTime )
 		{
-			__AddMessage( new Message( OWNER.SYSTEM, mMessageStorage.Count, msgTime, MessageType.RenderMap ) );
+			__AddMessage( new Message( OWNER.MANAGER, mMessageStorage.Count, msgTime, MessageType.RenderMap ) );
 		}
 
 		public	override	void	MsgInitGameSide( int msgTime, OWNER whichSide ) 
 		{
 			__AddMessage( new Message( whichSide, mMessageStorage.Count, msgTime, MessageType.InitGameSide ) );
+		}
+
+		public	override	void	MsgGameTurnInit( int msgTime, OWNER whichSide, int turnNumber )
+		{
+			__AddMessage( new Message( whichSide, mMessageStorage.Count, msgTime, MessageType.GameTurnInit, string.Format("Turn # {0}", turnNumber ) ) );
 		}
 
 		public	override	void	MsgPickRoadWay( int msgTime, OWNER whichSide ) 

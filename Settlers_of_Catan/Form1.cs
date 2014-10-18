@@ -78,7 +78,7 @@ namespace Settlers_of_Catan
         RED,
         SILVER,
         _size,
-		SYSTEM,	//	special enum for 'systems' calls
+		MANAGER,	//	special enum for 'System' calls
 	};
 
 	public enum PORT
