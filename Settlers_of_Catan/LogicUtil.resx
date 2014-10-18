@@ -1,0 +1,390 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="richTextBox5.Text" xml:space="preserve">
+    <value>This Tab is where you supply the rules for determining where to place your initial Settlement.  All Values provided below
+are in a range from 100 (which means most preferable) to Zero (ignore completely). Any value in between is allowed too.
+														CPU
+Step ONE allows you to decide your preference for the SIX basic	A	B	C	D	E	F	         Opponents
+Hex Types. Consult the table above to review the types.							         #
+
+Step TWO allows you to scale the previous value by the Resource	7	6-8	5-9	4-10	3-11	2-12
+Die Roll for the hex. Note '7' is the Desert / Robber.							         %
+
+Step THREE allows you to scale the current value by the		Brick	Grain	Lumber	Ore	Wool
+Resource contained in the location.								         %
+
+Step FOUR allows you to set how much you would like to avoid	 ( these are the # of available settlement locations )
+Hexes that may already contain CPU Settlements in them or nearby.	6	5	4	3	2	1	0
+A Settlement in any hex disables all immediately adjacent corners.							         %
+													     Use 'Settlement
+Step FIVE allows valid adjacent hexes to influence the hex value.	7	6-8	5-9	4-10	3-11	2-12	     Location' Tab to
+By considering adjacent hexes (based on their die roll ) you can						         %	     Place this side's
+alter how valuable a hex is (when comparing shared edges)		( values above are absolute mods like +10, not 10% )	        Settlement.
+
+Step SIX is only applicable to Port Hexes. A maximum of Two	2/2	1/2	0/2	1/1	0/1
+Ports may be found in one Hex. This step allows you to scale a Hex					         +
+based on how many Ports remain available out of the original #.	( values like 110% etc will increase a hexes interest level )
+													     Port Resource
+Step SEVEN is only for Ports, and allows you to scale the		Brick	Grain	Lumber	Ore	Wool	? 3-1	     = Hex Resource
+Hex Value based on the PORT Resource.								         %        Bonus :        %
+
+
+
+Final Step, each of the 19 Hexes will have its own value sorted from high to low. Choose from the TOP         Hexes based on % contribution to sum.</value>
+  </data>
+  <data name="richTextBox15.Text" xml:space="preserve">
+    <value>This Tab is where you supply the rules for determining where to place your SECOND Settlement.  All Values provided below
+are in a range from 100 (which means most preferable) to Zero (ignore completely). Any value in between is allowed too.
+														CPU
+Step ONE allows you to decide your preference for the SIX basic	A	B	C	D	E	F	         Opponents
+Hex Types. Consult the table above to review the types.							         #
+
+Step TWO allows you to scale the previous value by the Resource	7	6-8	5-9	4-10	3-11	2-12
+Die Roll for the hex. Note '7' is the Desert / Robber.							         %
+
+Step THREE allows you to scale the current value by the		Brick	Grain	Lumber	Ore	Wool
+Resource contained in the location.								         %
+
+Step FOUR allows you to set how much you would like to avoid	 ( these are the # of available settlement locations )
+Hexes that may already contain CPU Settlements in them or nearby.	6	5	4	3	2	1	0
+A Settlement in any hex disables all immediately adjacent corners.							         %
+													     Use 'Settlement
+Step FIVE allows valid adjacent hexes to influence the hex value.	7	6-8	5-9	4-10	3-11	2-12	     Location' Tab to
+By considering adjacent hexes (based on their die roll ) you can						         %	     Place this side's
+alter how valuable a hex is (when comparing shared edges)		( values above are absolute mods like +10, not 10% )	        Settlement.
+
+Step SIX is only applicable to Port Hexes. A maximum of Two	2/2	1/2	0/2	1/1	0/1
+Ports may be found in one Hex. This step allows you to scale a Hex					         +
+based on how many Ports remain available out of the original #.	( values like 110% etc will increase a hexes interest level )
+													     Port Resource
+Step SEVEN is only for Ports, and allows you to scale the		Brick	Grain	Lumber	Ore	Wool	? 3-1	     = Hex Resource
+Hex Value based on the PORT Resource.								         %        Bonus :        %
+
+
+
+Final Step, each of the 19 Hexes will have its own value sorted from high to low. Choose from the TOP         Hexes based on % contribution to sum.</value>
+  </data>
+  <data name="richTextBox4.Text" xml:space="preserve">
+    <value>Corner Weighting is determined by the sum of the 2 adjacent hexes. For example, when deciding 
+if a Settlement shall be placed on the WEST corner of the hex, the hex to the left and up, and 
+hex to the left and below are evaluated.  These two values are added together for the 'West' 
+weighting.  If applicable, extra modifiers for Ports may be applied.</value>
+  </data>
+  <data name="richTextBox3.Text" xml:space="preserve">
+    <value>There are SIX corners you may choose to place your Settlement.
+You will see a legend of those six potential spots to the left.  Every
+Settlement  (or City) must reside on one of these corners.
+		    
+Where you choose to place your Settlement will determine how
+many adjacent hexes you may draw resources from at the start of 
+ each turn. By choosing a Port location, you'll be losing out on some 
+adjacent hex resources, but the advantage of 'Maritime Trading' 
+
+
+
+
+
+
+
+
+
+
+ 			  Brick  Grain  Lumber Ore    Wool
+
+ 2/12		  Brick
+
+ 3/11		  Grain
+
+ 4/10		  Lumber
+
+ 5/9		  Ore
+
+ 6/8		  Wool</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="SettlementLegendPictBox.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAAGIAAABUCAYAAAB5huK+AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
+        vAAADrwBlbxySQAABJFJREFUeF7tnctNxDAQhlML9SBK4UYZNLAt7IkCVlw50AAXLkgUQAPG40c8fsWP
+        2LtZez4pEpt1nMz/xYaDLRZGHILl5e2RPbyf2bc6wdgHe3l7ZRf1SfP99cyevn7UJ87vK3uw2v2w0/sj
+        e/lVH4cHcsrLbm27Hs/s9Ke+UnARPGArwEhnEDy6KYixO/SvW5ZliCMM1JuZXfS8gYvgDayQczqDt/+V
+        nfAogT4+P+TPingR98O2iJrswkgR/IfLpzYbv8hqAzdH4btT1wgSNOFaTE7p7OA8mpqs6UyyimB/Zz7M
+        oEFcxBr2KkC3hRFiz3sziUhnF89UY0RwwOzT1zl+kbrhhQvR86J8G/iNkOWRJGj8muxwt7MrFCGCFsMn
+        dhF0CL+gzNsvRgn/jH8/zChiO7tSERz515A6Jzq3pxwwb81x6gH0CBEPHLhuBGwZfrjx7KCt+v2gDpEX
+        atP81R1xNGh61ta055ElaHrV2KzXGSRoetRKIio4rIiZJGha10wiKjmciBklaFrWvqunmSVoWmVAInZy
+        cxEkwdAiCxLRgJuJIAk+ezMhEY24ugiSEGdPNkVXkoQ0tRmRiMZ0F0ES8qnJikR0oJsIklBOaWYkohPN
+        RZCEekqy22xJEvaTmyGJ6MxuESShHTlZkogrUC2CJLQnlan3LUnox1a2JOKKZIsgCf2JZeyJcHf+bG9a
+        dFc5mxXgYtW4Oi/7k9eZturAK8tvSrwWgcjBX+FeWmdSxNrA2hOml5rjB8DL0f2l6QKnj8unv3zdkn0I
+        IrUoxIYcXoe1T7CyzpAMX4T1QKlNi3kiXO5PhP7OaVNZZ1SE+4Wwr6ceuBEK3+4cHswffoAesqEHOa6I
+        cC345TPZSGrrdDMPilg7WB9AvwnupkXnDQkgH9SeW48rIlyLFT6SgimtMygCsL6ALUX8jUhtWswRAbgP
+        dF8i4LwaJesRrjm3TlcCEBYhbs47SWxajD08tHWHL/58VyK8EWD+aqytc1MEgBuIoYbffmfTosR/W+T3
+        znlnKB9XBHpmfkAtbrgAPL+ZstE1GXWGJABREUQfskQAJKMfW9mSiCtSJAIgGe1JZRr9lmS0IydLEnEF
+        dokASMZ+cjMkEZ1pIgIgGfWUZJfVkmSUU5oZiehEFxEAycinJisS0YGuIgCSkaY2IxLRmKuIAEhGnD3Z
+        VF1JMnz2ZkIiGnETEQDJMLTIgkQ04KYiAJLRLgMSsZNDiABmltGy9iY9zSijdc0kopJDigBmktGjVhJR
+        waFFADPI6FVj815HltGzNtGzWPmtVjSHVml7q5phqbq1hN0sVZ9NRCo7f5W5vZlFs4hQrS1XkT0CqI1Y
+        lh7d4DimjGBNOdk52cTwRITBnaU2OM4rIkyuCI4eXuGhJTEbNnjHcHMUfsmGjHtkq5Z0diACTU0RcdYd
+        ZKfhOWwNexWgTbsbHCWziNDEsysYEZjQ2y3I3uBoGEFGSQ3h7DJFwMV4j5iZglygQ36j5AZHAxQxwhEj
+        L7vsEQEN0RymQ7X+s6BEDD/89oc2OAauG5ec7Jw2/BB5OTnd/9wxBIz9A02K2wm7KfCJAAAAAElFTkSu
+        QmCC
+</value>
+  </data>
+  <data name="richTextBox2.Text" xml:space="preserve">
+    <value> 			  Brick  Grain  Lumber Ore    Wool	
+
+ 2/12		  Brick
+
+ 3/11		  Grain
+
+ 4/10		  Lumber
+
+ 5/9		  Ore
+
+ 6/8		  Wool
+
+		Additional Corner Boosts for Port :
+If Port shared by TWO Hexes		Port Sits only on ONE Hex
+
+If Port Resource matches Hex	Resource of :</value>
+  </data>
+  <data name="pictureBox1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        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
+</value>
+  </data>
+  <data name="richTextBox1.Text" xml:space="preserve">
+    <value>This Tab allows you to tune the logic for choosing where a Side's Initial Settlements are placed.
+
+There are SIX unique type of basic Locations to choose from for your initial Settlements ( HEX TYPE ). Each of the 19 Catan map locations will fall into ONE
+of these 6 types. The NINE Port locations are BLUE Dots.
+
+			      TYPE	A		 	B			C			D			E			F
+
+			      PROS
+
+
+
+
+
+			      CONS
+
+
+
+
+
+
+											
+																Terrain 	Die Rolls	Ports</value>
+  </data>
+  <data name="richTextBox6.Text" xml:space="preserve">
+    <value>This Tab allows you to specify the rules for expanding your Culture around the map.  You are given a special set of criteria for the roads attached to your 
+initial two settlements, and then additional rules to expand as the game progresses.
+
+The Rules for your inital two roadways are simple, as there are few Settlements on the map, and they are forced to be some distance from each other.
+
+
+-------------------- FIRST SETTLEMENT ROADWAY ------------------------
+
+This section only needs to choose from one of the possible directions
+( three maximum ) that can exist adjacent to your initial settlement.
+Choose the setting that most reflects what you wish, weightings of
+zero will be ignored, the one with the highest weight will be the one
+that is the most likely to be chosen, based on its percentage chance.
+
+	Closest Port ( GENERIC (? 3-1), valid for Settlement Build )
+
+	Closest Port, Valid build, Resource of :
+
+	Resource Hex of :
+
+	Middle of Map
+
+	Closest Coastel Edge
+
+	Any hex with Die Roll &gt;=</value>
+  </data>
+</root>

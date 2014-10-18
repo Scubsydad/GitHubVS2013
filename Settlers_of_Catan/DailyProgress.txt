@@ -1,0 +1,109 @@
+I've actually been working on this thing since September 2nd now.
+
+Here is a broad outline of what I've done, using chronological order, rather than specific dates, as I didn't create this file to track progress until Oct 8th.
+
+Sept 2nd, created initial project 
+- Used home scanner to sample all artwork from game including game board pieces, cards, etc (except wooden pieces, obviously)
+- Used Paint to isolate all game pieces (one of each terrain types, and all the 6 different port categories) into bitmaps
+- Created a basic 'Form1' of project which supplied various settings for a map Generator, such as 'random map yes/no' etc controls for map generator.
+- Created a 'MapManager' class, responsible for creating a map via 3 inputs, random tiles, random die rolls, or random port placements.
+- Implemented map generator & map drawing algorithms.
+- Created a 'HexBase' class which contains the minimal information necessary to contain the data from the map (terrain type, unique location, etc)
+- ORIGINALLY had the Port data in the 'HexBase' but found my initial concept didn't handle hexes that had two different ports in them (there are 2 on the map)
+- Created a 'HexInfo' class which lives one level above 'HexBase' and provides additional information such as road network ownership, and 'build locations'
+- Created a 'SettlementLoc' class to contain information about the 6 corners of each hex, and provide whether its a port, or who owns it, etc.
+- Created a 'BuildLoc' class that lives one level above SettlementLoc that controls who OWNS a 'SettlementLoc' (essentially that class is read only).
+- Each 'HexInfo' contains an array of 6 'BuildLocs' which internally contain pointers to 'SettlementLocs'. This way each hex knows what it has.
+- Created a 'link network' between all the settlementLoc data to point to each adjacent build node, so pathways can be created (and builds disabled beside cities)
+- Converted my 'HexInfo' master array to work with floats for the coordinates of each location as a % of map width/height, so it can scale to smaller draws
+- Created a 'LogicUtil' windows form class, which began to take the basics of each side's tuning logic
+- Implemented the 'spawn utility copies distinct to each user' within 'Form1', so it has 4 tuning tabs for 'blue', 'orange', 'red' and 'silver' players
+- Copied over (and the activated) my 'MessageCenter' class that I had used/created for other home projects. Used in NHL career mode too, its handy.
+- Activated my 'MessageDisplay' windows form class, which is a form that listens to messages and displays a history of messages for debugging purposes.
+- Activated my 'MessageHandler' class which I developed which is one level above the 'MessageCenter' which converts sent messages to function call backs. its COOL.
+- Began working on the skeleton of the gameplay experience, firing off messages to initalize the game, and each of the 4 sides.
+- The process of initializing the game fires off a series of messages about hex terrain, die rolls & port locations, so the 4 classes 'build' their maps vis msgs.
+- Added the 'Pick Settlement' message and the function call backs, now the 4 logic classes get requests to pick their initial starting locations.
+- Began adding tuning data to the 'LogicUtil' to provide a tuning interface to look at the game map (whether random or not)
+(Approximately October now)
+- Added manually 'click on map for cpu side <x>' functionality to place a settlement on the map, to test how that placement would affect other cpu placements
+- Created a tuning interface and logic function to sit on top of the tuning functions to analyze the map and pick a starting hex location for first settlement.
+- Created a tuning component and harness that allows tuning of each of the 6 corners of a hex, once a hex is chosen, to pick the 'optimal' location for settlement
+- Hooked that logic into the message callback as described above, so that each of the 4 sides could run their tuning component logic & broadcast their selection
+- Discovered that my initial logic implementation for 'pick best hex' wasn't that great, and was a bit complicated. Ripped it out, put in a much better system
+
+Saturday, October 4th
+- Rejigged all the kernel logic to work with the new tuning components to pick a hex
+- Added 'Select Settlement' buttons to the 'LogicUtil' harness to mimic the 'user' character selection locations, in addition to the 3 'cpu' selections
+
+Monday, October 6th
+- Refactored some of the harness logic to make the to make use fo the new tuning components that were added so that the 'best hex' logic was current
+
+Wednesday, October 8th
+- Integrated my 'UtilityMgr.cs' & 'ResourceKernel.cs' files from work into the project, overtop of my (older iteration) versions I had at home.
+- Wrote the document you see now up until this point. :)
+- Added a generic 'MessageType.MessageHandled' message type that allows various classes to broadcast that they've dealt with a message, similar to 'callback'
+- Did a very cool upgrade. Converted the 'PlayGame' manager to not pre-queue all 8 'place settlement' messages, refactored it so that each placed settlement
+  kicks off a 'MessageHandled' message, which then is listened to by the PlayGame mgr to do the next request. This allows a user character to in theory take
+  as much time as they'd need to place their settlement, and not have some situation where the time stamps are obsolete by 'taking too long'. Very cool!
+- Renamed several of my messages (like InitPortLoc and PortLocSet) to be 'InitPortLocRequest' and 'InitPortLocSet' so they were logically grouped together
+- Added a simplistic 'State Machine' to the 'PlayGameMgr' class to handle user input at key points of the game, when the 'sim flow' stops
+- Added a 'StateRequest' message type, and the various listeners, and fire off a 'STATE' of 'place settlement for side <x>' to activate user input.
+
+Thursday, Oct 9th
+- Rejigged 'PlayGameMgr::MsgStateRequest' function to prepare a 'MessageBox.Show' explanation that is being launched based on the incoming 'StateRequest' message
+- Updated 'SideLogic::DoSettlementWeighting' logic function to be private, now takes an additional 'candidate list size' param to determine how many choices to sort
+- Wrote 'SideLogic::GetSettlementTopChoices' which uses the above re-factoring to allow the 'PlayGameMgr' to request the top <x> hexes the CPU would choose for 'help'
+- Removed the draw coordinate information from the 'SettlementLoc' struct, and instead infer the drawing location by the hex gfx loc, and the corner of hex it is in
+- Created 'SettlementLoc::GetSettlementGfxLoc' function which supports above refactor, so that the settlement doesn't need to store its drawing location anymore
+- Refactored 'SideLogic::MsgRenderMap' to break the render/draw function into a private function, which could be called by multiple sources, not just the RenderMsg
+- Used the 'GetSettlementTopChoices' function I wrote above to display 5 circles around the hexes (color coded by sort order) when its the user's turn to pick a hex
+
+Friday, Oct 10th
+- Updated my 'Show Top Settlements' display to use the hexagons own coordinates to draw a colored hexagonal outline, rather than an arbitrary elipse or something in hex
+- Updated the 'PlayGameManager' to take in a 'TabControl' from Form1 (game launcher) which contines 'help info' for each state that may be launched requireing user input
+- Updated 'PlayGameManager::SetState' to hide/show the tab relevant to the state being entered/required, so that the user may receive some info of the expectation/actions
+- Updated 'PlayGameManager' constructor to maintain a copy of all 19 hexes 'draw outlines' so I can use it for 'mouse collision' for placing settlements & hexes etc
+- Got 'PlayGameManager' 'MouseClickDown' call back working, so it recognizes which of the 19 hexes that the user clicked on in order to place their settlement
+
+Saturday, Oct 11
+- Fixed some function names in my 'SettlementLoc' class to avoid confusion between settlement ids & hexes sharing location
+- Fixed bug where drawing of the hex outline used a different offset (possibly) for each of the potential corners
+- Updated the 'Are you sure you want to choose Hex <x>' prompt to contain extra info about the location being selected (confirming terrain & resource type, die roll)
+- Renamed 'PlayGameMgr' states so I can differentiate between picking the hex & the corner of the hex
+- Added function/state processing to 'PlayGameManager' to highlight the potential build locations for user's chosen hex based on what CPU finds most valuable locations
+- Added functionality to allow user to click on map inside 'settlement weighting circles' (click radius == importance of location) to allow user to select a build loc.
+- Completed user interface code to allow user to select both of their settlements! YAY!
+
+Sunday, Oct 12
+- Fixed shutdown bug in the PlayGameMgr class in which the tabpages of the explanation tab (supplied as input param) are not compatible with mutliple runs of game
+- Created a 'PlayGameMgr::ShutDown' function in order to trigger clean up etc, since a custom class doesn't seemingly call a 'destructor' that I could trigger/find
+- Added two new solution files to have logical groupings for the 'HexBase' and 'HexInfo' etc classes that were embedded haphazardly into previous files
+- Added tuning data defaults for the computation of the first settlement roadway plots
+- Added 'kernel function' data to expose the tuning data to get build direction priority for first roadway
+- Added 'PickRoadWay' and 'AddRoadWay' message types to 'MessageCenter' class
+
+Monday, Oct 13
+- Ripped out my tuning data for plotting roads, way too combersome for the feature at that point of the game (too 'robust' for something that should be 'simple')
+
+Teusday, Oct 14
+- Created a 'DirLink' class that replaces my old integer array for adjacent settlement ids.
+- Added 'DirLink' class functionality to store adjacent ids by direction, for pathfinding purposes
+- Refactored old existing code that cared about adjacent ids to work with new 'DirLink' code including CITY_DIR enum support
+- Moved my SettlementLoc array definition out of 'Support' class and into the 'MapDefaultInfo' class, makes more sense there
+- Created a 'Pathfinder' class, which will provide various logics with 'pathfinding' direction info based on current map
+- Completed 'Pathfinder' constructor which extracts key info about map, such as where resources are, ports, die 'pips' etc
+- Added a 'A *' pathfinding algorithm to search through the hex map and plot the fast pathway to a target group of locations, the return the shortest distance direction
+
+Wednesday, Oct 15
+- Fixed an issue with 'Pathfinder' where if a list of source locations to plot matched the destination, it would be ignored by the plot logic
+- Made the 'PlayGameMgr' create the 'PathFinder' object and pass it in to the 4 'SideLogic' classes
+- Fixed bug with the 'LogicKernel::GetInitialSettlementPathTarget' function which didn't pass output values properly due to a bad cut/paste
+- Updated 'PathFinder' plot function to supply a (newly created) 'PathWay' class, which returns info on source id, dest id, distance, and initial direction
+- Created a 'SideLogic::ConfirmRoadway' function that both the cpu & user can call to confirm that a roadway is being built from settlement <x> in direction <y>
+- Moved my 'PATHWAY_TYPE' enum (and renamed it) from the Kernel class to be defined in the 'PathFinder.cs' file, but use the global namespace
+- Added the 'PATHWAY_TYPE' enum type to the 'PathWay' class so we can reverse engineer what type of path made that decision
+- Adjusted the 'MsgAddRoadWay' message to store a 'CITY_DIR' for which way the roadway went, as opposed to an earlier value which wasn't meaningful (# of roads)
+- Adjusted 'MessageDisplay' class to properly parse messages that pass in either a "DIR" enum or a 'CITY_DIR' enum depending on the message type
+- Added 'BuildLoc::SetRoadWayOwner' & 'BuildLoc::GetRoadWayOwner' so that each build location can keep track of roads that are going in/out and who owns them
+- Added 'SideLogic::_AddRoadWay' function which listens to the message, and updates all its internal map/hex links based on the new road that was just built
