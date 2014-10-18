@@ -257,8 +257,7 @@ namespace Settlers_of_Catan
 // once a settlement AND a roadway are placed for a side, this is 'one cycle' per side, so advance the placement owner list
 			if ( whichSide != OWNER.INVALID )
 			{
-				mMessageCtr.AddMessage( OWNER.SYSTEM, MessageType.RenderMap, 0 );	//	render the map to reflect the last choice made by settlement placement
-				mMessageCtr.PostMessage();
+				mMessageCtr.SendMsgRenderMap( );	//	render the map to reflect the last choice made by settlement placement
 
 				OWNER firstInQueue = (OWNER)mPlacementOrder[0];
 Debug.Assert( firstInQueue == whichSide );				//	always ensure the first one in the queue is who we want to hear back from

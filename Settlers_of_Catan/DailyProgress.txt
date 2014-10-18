@@ -107,3 +107,9 @@ Wednesday, Oct 15
 - Adjusted 'MessageDisplay' class to properly parse messages that pass in either a "DIR" enum or a 'CITY_DIR' enum depending on the message type
 - Added 'BuildLoc::SetRoadWayOwner' & 'BuildLoc::GetRoadWayOwner' so that each build location can keep track of roads that are going in/out and who owns them
 - Added 'SideLogic::_AddRoadWay' function which listens to the message, and updates all its internal map/hex links based on the new road that was just built
+
+Friday, Oct 17
+- Created a 'GitHub' server, but didn't know what the hell was going on or how to use it from the hithub webpage.
+- Found a great online resource (after googling) that showed you step by step how to integrate github into visual studio & edit/sync files, etc
+- Refactored the 'MessageCenter' class to provide a 'AddMsgSetSettlement' function, which hides all the data organization, and is basically
+  the REVERSE of the MsgAddSettlement function which BROADCASTS everything via enums/types etc. This is a cool little organizational cleanup
