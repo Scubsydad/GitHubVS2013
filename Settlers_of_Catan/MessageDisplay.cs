@@ -454,14 +454,19 @@ namespace Settlers_of_Catan
 			__AddMessage( new Message( sender, mMessageStorage.Count, msgTime, MessageType.MessageHandled, whichMessage.ToString() ) );
 		}
 
-		public	override	void	MsgStateRequest( int msgTime, OWNER sender, PlayGameMgr.STATE whichState, int miscVal )
+		public	override	void	MsgStateRequest( int msgTime, OWNER sender, PlayGameMgr.STATE whichState, int settlementId, int miscVal )
 		{
+			string settlementDesc = "";
+			if ( settlementId != -1 )
+			{
+				settlementDesc = string.Format( "[{0}]", settlementId.ToString() );
+			}
 			string miscDesc = "";
 			if ( miscVal != 0 )
 			{
-				miscDesc = string.Format( " ({0})", miscVal.ToString() );
+				miscDesc = string.Format( "({0})", miscVal.ToString() );
 			}
-			__AddMessage( new Message( sender, mMessageStorage.Count, msgTime, MessageType.StateRequest, string.Format("{0}{1}", whichState.ToString(), miscDesc ) ) );
+			__AddMessage( new Message( sender, mMessageStorage.Count, msgTime, MessageType.StateRequest, string.Format("{0}{1}{2}", whichState.ToString(), settlementDesc, miscDesc ) ) );
 		}
 
 	}

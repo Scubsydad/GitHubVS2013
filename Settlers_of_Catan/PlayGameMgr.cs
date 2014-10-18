@@ -22,8 +22,9 @@ namespace Settlers_of_Catan
 
 		SideLogic[]		mPlayerLogics;
 		MessageCenter	mMessageCtr;
-		int				mNumPlayers, mHexNumChosen, mSettlementBuildIndex;
-		int[]			mSettlementClickRadius;
+		int				mNumPlayers, mHexNumChosen, mSettlementBuildIndex, mSettlementId;
+		int[]			mClickLocRadius;
+		Point[]			mClickLocCenterPoint;
 		ArrayList		mTabStorage = new ArrayList(), mPlacementOrder = new ArrayList(), mTurnOrder = new ArrayList();
 		PictureBox		mPlayGamePictBox;
 		MapManager		mMapManager;
@@ -104,6 +105,11 @@ namespace Settlers_of_Catan
 			{
 				mStateExplainTabs.TabPages.Add( (TabPage)mTabStorage[(int)mCurrentState] );
 			}
+			else
+			{
+				mClickLocCenterPoint = null;	//	invalidate these when we go into dormant state so they aren't left dangling
+				mClickLocRadius = null;
+			}
 		}
 
 		public PlayGameMgr ShutDown()
@@ -135,7 +141,7 @@ namespace Settlers_of_Catan
 			SettlementLoc	settlementLoc;
 			CITY_DIR		dirEnum;
 			OWNER			roadOwner;
-			Point			roadPoint, gfxLoc, offset1, offset2;
+			Point			adjRoadPoint, roadPoint, gfxLoc, offset1, offset2;
 			Size			bmapSize = bmap.Size;
 			Graphics		gfx = Graphics.FromImage( bmap );
 
@@ -166,6 +172,8 @@ namespace Settlers_of_Catan
 							if ( indexFound == -1 )							//	if not, we'll draw it and track it
 							{
 								roadWaysDrawn.Add( roadPoint );				//	track so we know we've done it
+								adjRoadPoint =  new Point( settlementLoc.GetAdjacentLocId( dirEnum ), (int)Support.GetOppositeCityDir( dirEnum ) );
+								roadWaysDrawn.Add( adjRoadPoint );			//	flag the adjacent location as drawn, so we don't draw the same road 'back to us'
 								offset1 = new Point( 0, 0 );
 								offset2 = new Point( 0, 0 );
 								switch ( dirEnum )
@@ -281,14 +289,15 @@ Debug.Assert( firstInQueue == whichSide );				//	always ensure the first one in 
 			else if ( whichMessage == MessageType.PickRoadWay )		{	_RoadWayPlacementUpdate( sender );		}
 		}
 
-		private void        _NewStateChangeRequest( PlayGameMgr.STATE whichState, OWNER sender, int miscVal )
+		private void        _NewStateChangeRequest( PlayGameMgr.STATE whichState, OWNER forSide, int settlementId, int miscVal )
 		{
-			string		explainMsg = "", miscStr1 = "", headerMsg = string.Format( "Attention {0}!", sender.ToString() ) ;
+			string		explainMsg = "", miscStr1 = "", headerMsg = string.Format( "Attention {0}!", forSide.ToString() ) ;
 			Bitmap		bmap = _DoMapDraw();
 			Size		bmapSize = bmap.Size;
 			Graphics	gfx = Graphics.FromImage( bmap );
-			SideLogic	sideLogic = mPlayerLogics[(int)sender];
+			SideLogic	sideLogic = mPlayerLogics[(int)forSide];
 			bool		allowStateChange = true;		//	assume yes by default
+			Pen			drawPen = new Pen( Support.GetSideColor( forSide ), 3 );
 
 			if ( whichState == STATE.PICK_BUILD_HEX )
 			{
@@ -319,15 +328,14 @@ Debug.Assert( firstInQueue == whichSide );				//	always ensure the first one in 
 				if ( bestCorner == CITY_DIR.INVALID )
 				{
 					MessageBox.Show( "This hex has no allowable build locations to use.", "Attention!" );
-					_NewStateChangeRequest( STATE.PICK_BUILD_HEX, sender, mSettlementBuildIndex );	//	pick a new hex...
+					_NewStateChangeRequest( STATE.PICK_BUILD_HEX, forSide, -1, mSettlementBuildIndex );	//	pick a new hex...
 					allowStateChange = false;
 				}
 				else
 				{
 					int		pct, halfSize, elipseSize, largestVal = cityDirVals[(int)bestCorner];
 					Point	gfxLoc;
-					Pen		drawPen = new Pen( Support.GetSideColor( mStateOwner ), 3 );
-					mSettlementClickRadius = new int[(int)CITY_DIR._size];
+					mClickLocRadius = new int[(int)CITY_DIR._size];
 					for ( int i = 0; i < (int)CITY_DIR._size; ++i )
 					{
 						pct = ( ( cityDirVals[i] * 100 ) / largestVal );		//	convert to percentage of max
@@ -340,7 +348,7 @@ Debug.Assert( firstInQueue == whichSide );				//	always ensure the first one in 
 							gfx.DrawEllipse( drawPen, ( gfxLoc.X - halfSize ),
 													  ( gfxLoc.Y - halfSize ),
 													  elipseSize, elipseSize );	//	track how big the click radius is for selection purposes
-							mSettlementClickRadius[i] = halfSize;
+							mClickLocRadius[i] = halfSize;
 						}
 
 					}
@@ -348,7 +356,40 @@ Debug.Assert( firstInQueue == whichSide );				//	always ensure the first one in 
 			}
 			else if ( whichState == STATE.PICK_ROAD_WAY_LOC )
 			{
+				if ( settlementId != -1 )
+				{
+					mSettlementId = settlementId;
+					SettlementLoc	adjLoc, settlementLoc = MapDefs.GetSettlementLoc( mSettlementId );
+					int				numAdjSettlements = settlementLoc.GetNumAdjacentLocIds();
+					int				i = 0, adjSettlementId, radius = 18;
+					CITY_DIR		adjRoadDir;
+					Point			gfxPoint, settlementGfxLoc = settlementLoc.GetSettlementGfxLoc(bmapSize ), adjGfxLoc;
+// define 6 adjacent click locs/radia, but settlements will have max of 3. Use active index to determine clicked 'CITY_DIR'
+					mClickLocCenterPoint = new Point[(int)CITY_DIR._size];
+					mClickLocRadius = new int[(int)CITY_DIR._size];
 
+					for ( ; i < numAdjSettlements; ++i )
+					{
+						adjSettlementId = settlementLoc.GetAdjacentLocId( i, out adjRoadDir );
+						adjLoc = MapDefs.GetSettlementLoc( adjSettlementId );
+						adjGfxLoc = adjLoc.GetSettlementGfxLoc( bmapSize );
+						gfxPoint = new Point( ( ( settlementGfxLoc.X + adjGfxLoc.X ) / 2 ), ( ( settlementGfxLoc.Y + adjGfxLoc.Y ) / 2 ) );
+						gfx.DrawEllipse( drawPen, ( gfxPoint.X - radius ),
+													( gfxPoint.Y - radius ),
+													radius * 2, radius * 2 );	
+
+						mClickLocCenterPoint[(int)adjRoadDir] = gfxPoint;
+						mClickLocRadius[(int)adjRoadDir]  = radius;
+					}
+					if ( miscVal == 0 )	//	is this the first time we are getting a plot road request?
+					{
+						explainMsg = "It is now time for you to place your first roadway.\n\nChoose from the available highlighted locations on the map.";
+					}
+				}
+				else
+				{
+Debug.Assert( false ); // we need a solution to plot all 'roadway ends' in the future
+				}
 			}
 			if ( explainMsg != "" )
 			{
@@ -356,13 +397,13 @@ Debug.Assert( firstInQueue == whichSide );				//	always ensure the first one in 
 			}
 			if ( allowStateChange )					//	we might have to transition out of a state request in some instances
 			{
-				_SetState( whichState, sender );	//	so ensure we get confirmation before we change
+				_SetState( whichState, forSide );	//	so ensure we get confirmation before we change
 			}
 		}
 
-		public	override	void	MsgStateRequest( int msgTime, OWNER sender, PlayGameMgr.STATE whichState, int miscVal )
+		public	override	void	MsgStateRequest( int msgTime, OWNER sender, PlayGameMgr.STATE whichState, int settlementId, int miscVal )
 		{
-			_NewStateChangeRequest( whichState, sender, miscVal );
+			_NewStateChangeRequest( whichState, sender, settlementId, miscVal );
 		}
 
 		void _PlayGamePictMouseDown(object sender, MouseEventArgs e)
@@ -371,6 +412,9 @@ Debug.Assert( firstInQueue == whichSide );				//	always ensure the first one in 
 			int				mouseX = e.X;
 			int				mouseY = e.Y;
 			Point[]			pointArray;
+			CITY_DIR		clickDir = CITY_DIR.INVALID;
+			Point			clickLoc;
+			int				xDelta, yDelta, dist;
 
 			if ( mCurrentState == STATE.PICK_BUILD_HEX )
 			{
@@ -385,7 +429,7 @@ Debug.Assert( firstInQueue == whichSide );				//	always ensure the first one in 
 						HexInfo hexInfo = mGfxLocHexArray[i];
 						if ( Support.IsQuestionTrue( string.Format("Are you sure you want to choose hex # {0}?\n\nTerrain\t : {1}\nResource\t : {2}\nDie Roll\t : {3}", i, hexInfo.GetTerrain().ToString(), hexInfo.GetEarnResource().ToString(), hexInfo.GetDieRoll() ), "Please Confirm" ) )
 						{
-							_NewStateChangeRequest( STATE.PICK_BUILD_CORNER, mStateOwner, i );
+							_NewStateChangeRequest( STATE.PICK_BUILD_CORNER, mStateOwner, -1, i );
 							break;
 						}
 					}
@@ -393,16 +437,13 @@ Debug.Assert( firstInQueue == whichSide );				//	always ensure the first one in 
 			}
 			else if ( mCurrentState == STATE.PICK_BUILD_CORNER )
 			{
-				CITY_DIR	clickDir = CITY_DIR.INVALID;
-				Point		clickLoc;
-				int			xDelta, yDelta, dist;
 				for ( ; i < (int)CITY_DIR._size; ++i )
 				{
 					clickLoc = mBuilLocs[mHexNumChosen][i];
 					xDelta = ( clickLoc.X - mouseX );
 					yDelta = ( clickLoc.Y - mouseY );
 					dist = (int)Math.Sqrt( (double)(( xDelta * xDelta ) + ( yDelta * yDelta )) );
-					if ( dist <= mSettlementClickRadius[i] )
+					if ( dist <= mClickLocRadius[i] )
 					{
 						clickDir = (CITY_DIR)i;
 						break;
@@ -415,6 +456,31 @@ Debug.Assert( firstInQueue == whichSide );				//	always ensure the first one in 
 						OWNER currOwner = mStateOwner;				//	back up the owner before we erase the state
 						 _SetState( STATE.DORMANT, OWNER.INVALID );	//	disable the state BEFORE we send the message, or we'll lose the results of the 'confirm settlement' call
 						 mPlayerLogics[(int)currOwner].ConfirmSettlement( mHexNumChosen, clickDir );
+					}
+
+				}
+			}
+			else if ( mCurrentState == STATE.PICK_ROAD_WAY_LOC )
+			{
+				for ( ; i < (int)CITY_DIR._size; ++i )
+				{
+					clickLoc = mClickLocCenterPoint[i];
+					xDelta = ( clickLoc.X - mouseX );
+					yDelta = ( clickLoc.Y - mouseY );
+					dist = (int)Math.Sqrt( (double)(( xDelta * xDelta ) + ( yDelta * yDelta )) );
+					if ( dist <= mClickLocRadius[i] )
+					{
+						clickDir = (CITY_DIR)i;
+						break;
+					}
+				}
+				if ( clickDir != CITY_DIR.INVALID )
+				{
+					if ( Support.IsQuestionTrue( string.Format("Please confirm you wish to place your ROAD off of\nSettlement ID {0} going in the {1} direction?", mSettlementId, clickDir.ToString() ), "Please Confirm" ) )
+					{
+						OWNER currOwner = mStateOwner;				//	back up the owner before we erase the state
+						 _SetState( STATE.DORMANT, OWNER.INVALID );	//	disable the state BEFORE we send the message, or we'll lose the results of the 'confirm settlement' call
+						 mPlayerLogics[(int)currOwner].ConfirmRoadway( mSettlementId, clickDir );
 					}
 
 				}

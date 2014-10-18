@@ -71,7 +71,7 @@ namespace Settlers_of_Catan
 
 					case	MessageType.MessageHandled		:	MsgMessageHandled( timeStamp, _GetMessageSender(), (MessageType)_GetMessageData( MsgParam.UniqueId ), _GetMessageData( MsgParam.MiscVal ) );	break;
 
-					case	MessageType.StateRequest		:	MsgStateRequest( timeStamp, _GetMessageSender(), (PlayGameMgr.STATE)_GetMessageData( MsgParam.UniqueId ), _GetMessageData( MsgParam.MiscVal ) );	break;
+					case	MessageType.StateRequest		:	MsgStateRequest( timeStamp, _GetMessageSender(), (PlayGameMgr.STATE)_GetMessageData( MsgParam.UniqueId ), _GetMessageData( MsgParam.SettlementId ), _GetMessageData( MsgParam.MiscVal ) );	break;
 
 					case	MessageType.RandomNumSeed		:	MsgRandomNumSeed( timeStamp, _GetMessageData( MsgParam.MiscVal ) );	break;
 
@@ -109,7 +109,7 @@ Debug.Assert( !mAssertIfNotHandled );
 		public	virtual	void	MsgPickRoadWay( int msgTime, OWNER side ) { _ConfirmHandled(); }
 		public	virtual	void	MsgPickSettlement( int msgTime, OWNER side ) { _ConfirmHandled(); }
 		public	virtual	void	MsgMessageHandled( int msgTime, OWNER sender, MessageType whichMessage, int miscVal ) { _ConfirmHandled(); }
-		public	virtual	void	MsgStateRequest( int msgTime, OWNER sender, PlayGameMgr.STATE whichState, int miscVal ) { _ConfirmHandled(); }
+		public	virtual	void	MsgStateRequest( int msgTime, OWNER sender, PlayGameMgr.STATE whichState, int settlementId, int miscVal ) { _ConfirmHandled(); }
 
 	
 	}

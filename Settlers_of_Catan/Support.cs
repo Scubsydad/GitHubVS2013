@@ -58,7 +58,7 @@ namespace Settlers_of_Catan
 				case	OWNER.RED	:	return ( Color.Red );
 				case	OWNER.SILVER:	return ( Color.Silver);
 			}
-			return ( Color.Pink );
+			return ( Color.HotPink );
 		}
 
 		static  private void		_LinkSettlementDataToHexInfo()

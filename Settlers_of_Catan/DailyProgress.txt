@@ -113,3 +113,12 @@ Friday, Oct 17
 - Found a great online resource (after googling) that showed you step by step how to integrate github into visual studio & edit/sync files, etc
 - Refactored the 'MessageCenter' class to provide a 'AddMsgSetSettlement' function, which hides all the data organization, and is basically
   the REVERSE of the MsgAddSettlement function which BROADCASTS everything via enums/types etc. This is a cool little organizational cleanup
+
+  Saturday, Oct 18
+  - Its my birthday today! ( hopefully there will be no need to 'cry if I want to' :)  Up at 6AM working, since I woke up, and kids still sleeping.
+  - Fixed bug where a road was drawn twice on the map, once connecting settlement <a> to <b>, then when it processed <b> it draw it again back to <a>
+  - Updated 'PlayGameMgr' to track the possible road locations for the initial settlements, and highlight them on map and track the center point, elipse size, etc
+  - YAY! Got road selection map click working for user character, I'm now ready to 'start the game'
+  - Thank Andrew for recommending 'GitHub', it just saved me when I started to make a refactor and touched variables I should not have, and had a good 'diff' for fix
+  - Updated 'StateRequest' message to pass in a 'SettlementId' and a (already existing) 'MiscVal' so that I could broadcast more relevant information with state change
+  - Updated all the 'SendMsgStateRequest' request and 'MsgStateRequest' function links to support the new param

@@ -49,6 +49,7 @@ namespace Settlers_of_Catan
 		MiscVal,
 		PortId,
 		Resource,
+		SettlementId,
 		TimeStamp,		//	NOT actually used, special accessor for Message Time post/get
 		UniqueId, 
 
@@ -118,8 +119,10 @@ namespace Settlers_of_Catan
 			MsgParam[] senderValDesc = new MsgParam[] { MsgParam.UniqueId, MsgParam.MiscVal, MsgParam.SenderSide };
 			__AddMessageType( MessageType.AddRoadWay, senderValDesc );
 			__AddMessageType( MessageType.AddSettlement, senderValDesc );
-			__AddMessageType( MessageType.StateRequest, senderValDesc );
 			__AddMessageType( MessageType.MessageHandled, senderValDesc );
+
+			MsgParam[] senderVal2Desc = new MsgParam[] { MsgParam.UniqueId, MsgParam.SettlementId, MsgParam.MiscVal, MsgParam.SenderSide };
+			__AddMessageType( MessageType.StateRequest, senderVal2Desc );
 
 			__AddMessageType( MessageType.InitPortLocSet, new MsgParam[] { MsgParam.PortId, MsgParam.Resource } );
 
@@ -863,10 +866,11 @@ Debug.Assert( ( mBeenPosted == 0 ), "Already posted message" );
 			PostMessage();
 		}
 
-		public void SendMsgStateRequest( OWNER sender, PlayGameMgr.STATE whichState, int miscAssocVal ) 
+		public void SendMsgStateRequest( OWNER sender, PlayGameMgr.STATE whichState, int settlementid, int miscAssocVal ) 
 		{
 			_AddMessage( OWNER.SYSTEM, MessageType.StateRequest, 0 );
 			_SetMessageData( MsgParam.UniqueId, (int)whichState );
+			_SetMessageData( MsgParam.SettlementId, settlementid );
 			_SetMessageData( MsgParam.MiscVal, miscAssocVal );
 			_SetMessageData( MsgParam.SenderSide, (int)sender );		//	we need to broadcast who sent it, because everybody should listen...
 			PostMessage();

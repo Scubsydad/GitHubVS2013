@@ -430,7 +430,7 @@ Debug.Assert( buildLoc.IsValidBuildLoc() );
 		{
 			if ( mIsUserControlled )
 			{
-				mMessageCtr.SendMsgStateRequest( mWhichSide, PlayGameMgr.STATE.PICK_BUILD_HEX, ( mNumAssetsUsed[(int)ASSET.SETTLEMENT] + 1 ) );
+				mMessageCtr.SendMsgStateRequest( mWhichSide, PlayGameMgr.STATE.PICK_BUILD_HEX, -1, ( mNumAssetsUsed[(int)ASSET.SETTLEMENT] + 1 ) );
 			}
 			else
 			{
@@ -449,7 +449,7 @@ Debug.Assert( buildLoc.IsValidBuildLoc() );
 			SettlementLoc	settlementLoc = initialBuildLoc.GetSettlementLoc();	//	get settlement loc attached
 			if ( mIsUserControlled )
 			{
-				mMessageCtr.SendMsgStateRequest( mWhichSide, PlayGameMgr.STATE.PICK_ROAD_WAY_LOC, settlementLoc.GetUniqueId() );
+				mMessageCtr.SendMsgStateRequest( mWhichSide, PlayGameMgr.STATE.PICK_ROAD_WAY_LOC, settlementLoc.GetUniqueId(), roadwayIndex );
 			}
 			else
 			{
