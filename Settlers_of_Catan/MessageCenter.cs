@@ -771,6 +771,118 @@ Debug.Assert( ( mBeenPosted == 0 ), "Already posted message" );
 				return ( sameParam );
 			}
 		}
+
+		public void	SendMsgRenderMap( ) 
+		{
+
+		}
+
+		public void SendMsgAddRoadWay( OWNER side, int settlementId, CITY_DIR whichDir )  
+		{
+			AddMessage( OWNER._size, MessageType.AddRoadWay, 0 );
+			SetMessageData( MsgParam.UniqueId, settlementId );
+			SetMessageData( MsgParam.MiscVal, (int)whichDir );
+			SetMessageData( MsgParam.SenderSide, (int)side );		//	we need to broadcast who sent it, because everybody should listen...
+			PostMessage();
+		}
+
+		public void SendMsgAddSettlement( OWNER side, int settlementId, int numSettlements ) 
+		{
+			AddMessage( OWNER._size, MessageType.AddSettlement, 0 );
+			SetMessageData( MsgParam.UniqueId, settlementId );
+			SetMessageData( MsgParam.MiscVal, numSettlements );
+			SetMessageData( MsgParam.SenderSide, (int)side );		//	we need to broadcast who sent it, because everybody should listen...
+			PostMessage();
+		}
+
+		public void SendMsgInitDieRollRequest( int wantRandomOnOff ) 
+		{
+			AddMessage( OWNER._size, MessageType.InitDieRollRequest, 0 );
+			SetMessageData( MsgParam.MiscVal, wantRandomOnOff );
+			PostMessage();
+		}
+
+		public void SendMsgInitPortLocRequest( int wantRandomOnOff ) 
+		{
+			AddMessage( OWNER._size, MessageType.InitPortLocRequest, 0 );
+			SetMessageData( MsgParam.MiscVal, wantRandomOnOff );
+			PostMessage();
+		}
+
+		public void SendMsgInitTerrainRequest( int wantRandomOnOff ) 
+		{
+			AddMessage( OWNER._size, MessageType.InitTerrainRequest, 0 );
+			SetMessageData( MsgParam.MiscVal, wantRandomOnOff );
+			PostMessage();
+		}
+
+		public void SendMsgRandomNumSeed( int randSeedVal ) 
+		{
+			AddMessage( OWNER._size, MessageType.RandomNumSeed, 0 );
+			SetMessageData( MsgParam.MiscVal, randSeedVal );
+			PostMessage();
+		}
+
+		public void SendMsgInitTerrainSet( int uniqueId, TERRAIN terrain ) 
+		{
+			AddMessage( OWNER._size, MessageType.InitTerrainSet, 0 );
+			SetMessageData( MsgParam.UniqueId, uniqueId );
+			SetMessageData( MsgParam.MiscVal, (int)terrain );
+			PostMessage();
+		}
+
+		public void SendMsgInitDieRollSet( int uniqueId, int dieRoll ) 
+		{
+			AddMessage( OWNER._size, MessageType.InitDieRollSet, 0 );
+			SetMessageData( MsgParam.UniqueId, uniqueId );
+			SetMessageData( MsgParam.MiscVal, dieRoll );
+			PostMessage();
+		}
+
+		public void SendMsgInitPortLocSet( PORT portEnum, RESOURCE portResource ) 
+		{
+			AddMessage( OWNER._size, MessageType.InitPortLocSet, 0 );
+			SetMessageData( MsgParam.PortId, (int)portEnum );
+			SetMessageData( MsgParam.Resource, (int)portResource );
+			PostMessage();
+		}
+
+		public void SendMsgInitGameSide( OWNER side ) 
+		{
+			AddMessage( side, MessageType.InitGameSide, 0 );
+			PostMessage();
+		}
+
+		public void SendMsgPickRoadWay( OWNER side ) 
+		{
+			AddMessage( side, MessageType.PickRoadWay, 0 );		//	each settlement placed should fire off the next guy in line
+			PostMessage();
+		}
+
+		public void SendMsgPickSettlement( OWNER side ) 
+		{
+			AddMessage( side, MessageType.PickSettlement, 0 );	//	each settlement placed should fire off the next guy in line
+			PostMessage();
+		}
+
+		public void SendMsgMessageHandled( OWNER sender, MessageType whichMessage, int miscAssocVal ) 
+		{
+			AddMessage( OWNER.SYSTEM, MessageType.MessageHandled, 0 );
+			SetMessageData( MsgParam.UniqueId, (int)whichMessage );
+			SetMessageData( MsgParam.MiscVal, miscAssocVal );
+			SetMessageData( MsgParam.SenderSide, (int)sender );		//	we need to broadcast who sent it, because everybody should listen...
+			PostMessage();
+		}
+
+		public void SendMsgStateRequest( OWNER sender, PlayGameMgr.STATE whichState, int miscAssocVal ) 
+		{
+			AddMessage( OWNER.SYSTEM, MessageType.StateRequest, 0 );
+			SetMessageData( MsgParam.UniqueId, (int)whichState );
+			SetMessageData( MsgParam.MiscVal, miscAssocVal );
+			SetMessageData( MsgParam.SenderSide, (int)sender );		//	we need to broadcast who sent it, because everybody should listen...
+			PostMessage();
+		}
+
 	}
 
 	public	class	MsgFilter

@@ -232,8 +232,7 @@ namespace Settlers_of_Catan
 // prepare for game, choose list of settlements to select from
 			for ( i = 0; i < mNumPlayers; ++i )
 			{
-				mMessageCtr.AddMessage( (OWNER)mTurnOrder[i], MessageType.InitGameSide, 0 );
-				mMessageCtr.PostMessage();
+				mMessageCtr.SendMsgInitGameSide( (OWNER)mTurnOrder[i] );
 			}
 // players first available settlement in default turn order
 			for ( i = 0; i < mNumPlayers; ++i )
@@ -274,20 +273,12 @@ Debug.Assert( firstInQueue == whichSide );				//	always ensure the first one in 
 		private void _SendPickSettlementMessage()
 		{
 			OWNER whichSide = (OWNER)mPlacementOrder[0];	//	grab next side that is supposed to pick their settlement
-			mMessageCtr.AddMessage( whichSide, MessageType.PickSettlement, 0 );	//	each settlement placed should fire off the next guy in line
-			mMessageCtr.PostMessage();
-		}
-
-		private void _SettlementPlacementUpdate( OWNER whichSide )
-		{
-// placement of a settlement should automatically kick off placement of a roadway plot by the same side
-			mMessageCtr.AddMessage( whichSide, MessageType.PickRoadWay, 0 );	//	each settlement placed should fire off the next guy in line
-			mMessageCtr.PostMessage();
+			mMessageCtr.SendMsgPickSettlement( whichSide );	//	each settlement placed should fire off the next guy in line
 		}
 
 		public	override	void	MsgMessageHandled( int msgTime, OWNER sender, MessageType whichMessage, int miscVal )
 		{
-			if ( whichMessage == MessageType.PickSettlement )		{	_SettlementPlacementUpdate( sender );		}
+			if ( whichMessage == MessageType.PickSettlement )		{	mMessageCtr.SendMsgPickRoadWay( sender );		}
 			else if ( whichMessage == MessageType.PickRoadWay )		{	_RoadWayPlacementUpdate( sender );		}
 		}
 

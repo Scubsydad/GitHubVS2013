@@ -249,25 +249,16 @@ namespace Settlers_of_Catan
 //	figure out the random seed & broadcast it out to stakeholders
 			int randSeed = Support.InitRandNumGen( UtilData.GetShortValue( RandomSeedBox ) );
 			RandSeedLbl.Text = string.Format("Random # Seed :               {0}", randSeed );
-			mMessageCenter.AddMessage( OWNER._size, MessageType.RandomNumSeed, 0 );
-			mMessageCenter.SetMessageData( MsgParam.MiscVal, randSeed );
-			mMessageCenter.PostMessage();
+
+			mMessageCenter.SendMsgRandomNumSeed( randSeed );
 
 			mMapManager = new MapManager( mMessageCenter );
 			mPlayGameMgr = new PlayGameMgr( mMessageCenter, mNumOwnersActive, mSideCtrl, mMapManager, mMapPictBox, StateExplainTabs );
 
 
-			mMessageCenter.AddMessage( OWNER._size, MessageType.InitTerrainRequest, 0 );
-			mMessageCenter.SetMessageData( MsgParam.MiscVal, MapTypeCombo.SelectedIndex );
-			mMessageCenter.PostMessage();
-
-			mMessageCenter.AddMessage( OWNER._size, MessageType.InitDieRollRequest, 0 );
-			mMessageCenter.SetMessageData( MsgParam.MiscVal, ResourceRollCombo.SelectedIndex );
-			mMessageCenter.PostMessage();
-
-			mMessageCenter.AddMessage( OWNER._size, MessageType.InitPortLocRequest, 0 );
-			mMessageCenter.SetMessageData( MsgParam.MiscVal, PortLocationsCombo.SelectedIndex );
-			mMessageCenter.PostMessage();
+			mMessageCenter.SendMsgInitTerrainRequest( MapTypeCombo.SelectedIndex );
+			mMessageCenter.SendMsgInitDieRollRequest( ResourceRollCombo.SelectedIndex );
+			mMessageCenter.SendMsgInitPortLocRequest( PortLocationsCombo.SelectedIndex );
 
 			int playerStartIndex = FirstPlayerTrackBar.Value;
 			while ( playerStartIndex == 0 )	//	is the track bar set to 'random' starting player?

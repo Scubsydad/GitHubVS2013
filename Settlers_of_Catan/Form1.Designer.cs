@@ -43,6 +43,9 @@
 			this.SettlementCornerTab = new System.Windows.Forms.TabPage();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+			this.RoadwayPlotTab = new System.Windows.Forms.TabPage();
+			this.pictureBox2 = new System.Windows.Forms.PictureBox();
+			this.richTextBox3 = new System.Windows.Forms.RichTextBox();
 			this.TurnOrderCombo = new System.Windows.Forms.ComboBox();
 			this.RandomSeedBox = new System.Windows.Forms.TextBox();
 			this.RandSeedLbl = new System.Windows.Forms.Label();
@@ -64,21 +67,18 @@
 			this.LogicTabOrange = new System.Windows.Forms.TabPage();
 			this.LogicTabRed = new System.Windows.Forms.TabPage();
 			this.LogicTabSilver = new System.Windows.Forms.TabPage();
-			this.RoadwayPlotTab = new System.Windows.Forms.TabPage();
-			this.pictureBox2 = new System.Windows.Forms.PictureBox();
-			this.richTextBox3 = new System.Windows.Forms.RichTextBox();
 			this.Tabs.SuspendLayout();
 			this.PlayGameTab.SuspendLayout();
 			this.StateExplainTabs.SuspendLayout();
 			this.SettlementHexSelectTab.SuspendLayout();
 			this.SettlementCornerTab.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+			this.RoadwayPlotTab.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.mMapPictBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.FirstPlayerTrackBar)).BeginInit();
 			this.SideLogicTab.SuspendLayout();
 			this.SideLogicTabs.SuspendLayout();
-			this.RoadwayPlotTab.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// Tabs
@@ -259,6 +259,41 @@
 			this.richTextBox2.Text = resources.GetString("richTextBox2.Text");
 			this.richTextBox2.WordWrap = false;
 			// 
+			// RoadwayPlotTab
+			// 
+			this.RoadwayPlotTab.BackColor = System.Drawing.SystemColors.Control;
+			this.RoadwayPlotTab.Controls.Add(this.pictureBox2);
+			this.RoadwayPlotTab.Controls.Add(this.richTextBox3);
+			this.RoadwayPlotTab.Location = new System.Drawing.Point(4, 22);
+			this.RoadwayPlotTab.Name = "RoadwayPlotTab";
+			this.RoadwayPlotTab.Size = new System.Drawing.Size(462, 114);
+			this.RoadwayPlotTab.TabIndex = 3;
+			this.RoadwayPlotTab.Tag = "Early Road Building";
+			this.RoadwayPlotTab.Text = "3";
+			// 
+			// pictureBox2
+			// 
+			this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
+			this.pictureBox2.Location = new System.Drawing.Point(333, 4);
+			this.pictureBox2.Name = "pictureBox2";
+			this.pictureBox2.Size = new System.Drawing.Size(126, 107);
+			this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+			this.pictureBox2.TabIndex = 65;
+			this.pictureBox2.TabStop = false;
+			// 
+			// richTextBox3
+			// 
+			this.richTextBox3.BackColor = System.Drawing.SystemColors.Control;
+			this.richTextBox3.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.richTextBox3.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.richTextBox3.Location = new System.Drawing.Point(3, 4);
+			this.richTextBox3.Name = "richTextBox3";
+			this.richTextBox3.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
+			this.richTextBox3.Size = new System.Drawing.Size(324, 107);
+			this.richTextBox3.TabIndex = 64;
+			this.richTextBox3.Text = resources.GetString("richTextBox3.Text");
+			this.richTextBox3.WordWrap = false;
+			// 
 			// TurnOrderCombo
 			// 
 			this.TurnOrderCombo.FormattingEnabled = true;
@@ -350,6 +385,7 @@
 			this.FirstPlayerTrackBar.Name = "FirstPlayerTrackBar";
 			this.FirstPlayerTrackBar.Size = new System.Drawing.Size(74, 17);
 			this.FirstPlayerTrackBar.TabIndex = 8;
+			this.FirstPlayerTrackBar.Value = 2;
 			// 
 			// StartStopButton
 			// 
@@ -482,41 +518,6 @@
 			this.LogicTabSilver.TabIndex = 3;
 			this.LogicTabSilver.Text = "Silver";
 			// 
-			// RoadwayPlotTab
-			// 
-			this.RoadwayPlotTab.BackColor = System.Drawing.SystemColors.Control;
-			this.RoadwayPlotTab.Controls.Add(this.pictureBox2);
-			this.RoadwayPlotTab.Controls.Add(this.richTextBox3);
-			this.RoadwayPlotTab.Location = new System.Drawing.Point(4, 22);
-			this.RoadwayPlotTab.Name = "RoadwayPlotTab";
-			this.RoadwayPlotTab.Size = new System.Drawing.Size(462, 114);
-			this.RoadwayPlotTab.TabIndex = 3;
-			this.RoadwayPlotTab.Tag = "Early Road Building";
-			this.RoadwayPlotTab.Text = "3";
-			// 
-			// pictureBox2
-			// 
-			this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
-			this.pictureBox2.Location = new System.Drawing.Point(333, 4);
-			this.pictureBox2.Name = "pictureBox2";
-			this.pictureBox2.Size = new System.Drawing.Size(126, 107);
-			this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-			this.pictureBox2.TabIndex = 65;
-			this.pictureBox2.TabStop = false;
-			// 
-			// richTextBox3
-			// 
-			this.richTextBox3.BackColor = System.Drawing.SystemColors.Control;
-			this.richTextBox3.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.richTextBox3.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.richTextBox3.Location = new System.Drawing.Point(3, 4);
-			this.richTextBox3.Name = "richTextBox3";
-			this.richTextBox3.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
-			this.richTextBox3.Size = new System.Drawing.Size(324, 107);
-			this.richTextBox3.TabIndex = 64;
-			this.richTextBox3.Text = resources.GetString("richTextBox3.Text");
-			this.richTextBox3.WordWrap = false;
-			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -532,12 +533,12 @@
 			this.SettlementHexSelectTab.ResumeLayout(false);
 			this.SettlementCornerTab.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+			this.RoadwayPlotTab.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.mMapPictBox)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.FirstPlayerTrackBar)).EndInit();
 			this.SideLogicTab.ResumeLayout(false);
 			this.SideLogicTabs.ResumeLayout(false);
-			this.RoadwayPlotTab.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
 			this.ResumeLayout(false);
 
 		}

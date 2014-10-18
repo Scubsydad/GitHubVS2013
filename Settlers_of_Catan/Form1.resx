@@ -117,6 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="richTextBox4.Text" xml:space="preserve">
+    <value>You must now select which Hex you wish to place your settlement 
+on. Click on the map near the center of the Hex you wish to have.
+You will then be prompted to choose a specific settlements.
+
+Out of the remaining hexes, the top FIVE the CPU would pick are 
+highlighted. Keep in mind that even the 'Lowest Quality Choice'
+is still a better option than all hexes that do not have a highlight.</value>
+  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="pictureBox1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -2084,14 +2093,5 @@ immediately adjacent to your starting settlements.
 
 There are no CPU generated 'hints' as to Road Building on your
 initial settlements, but the available options will be shown to you.</value>
-  </data>
-  <data name="richTextBox4.Text" xml:space="preserve">
-    <value>You must now select which Hex you wish to place your settlement 
-on. Click on the map near the center of the Hex you wish to have.
-You will then be prompted to choose a specific settlements.
-
-Out of the remaining hexes, the top FIVE the CPU would pick are 
-highlighted. Keep in mind that even the 'Lowest Quality Choice'
-is still a better option than all hexes that do not have a highlight.</value>
   </data>
 </root>

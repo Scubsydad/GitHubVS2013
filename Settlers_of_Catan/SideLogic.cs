@@ -408,16 +408,8 @@ Debug.Assert( selectedIndex != -1 );
 		{
 			AdjustAssetCount( ASSET.ROAD, 1 );
 
-			mMessageCtr.AddMessage( OWNER._size, MessageType.AddRoadWay, 0 );
-			mMessageCtr.SetMessageData( MsgParam.UniqueId, settlementId );
-			mMessageCtr.SetMessageData( MsgParam.MiscVal, (int)roadDir );
-			mMessageCtr.SetMessageData( MsgParam.SenderSide, (int)mWhichSide );		//	we need to broadcast who sent it, because everybody should listen...
-			mMessageCtr.PostMessage();
-
-			mMessageCtr.AddMessage( OWNER.SYSTEM, MessageType.MessageHandled, 0 );
-			mMessageCtr.SetMessageData( MsgParam.UniqueId, (int)MessageType.PickRoadWay );
-			mMessageCtr.SetMessageData( MsgParam.SenderSide, (int)mWhichSide );		//	we need to broadcast who sent it, because everybody should listen...
-			mMessageCtr.PostMessage();
+			mMessageCtr.SendMsgAddRoadWay( mWhichSide, settlementId, roadDir );
+			mMessageCtr.SendMsgMessageHandled( mWhichSide, MessageType.PickRoadWay, -1 );
 		}
 
 		public	void	ConfirmSettlement( int hexLocId, CITY_DIR cityDir )
@@ -430,28 +422,15 @@ Debug.Assert( buildLoc.IsValidBuildLoc() );
 			mBuildLocs.Add( buildLoc );		//	
 			int			numSettlements = AdjustAssetCount( ASSET.SETTLEMENT, 1 );
 //Remember, settlements may be shared across hex sides, so it makes no sense to broadcast 'hex' and 'corner' since there may be several
-			mMessageCtr.AddMessage( OWNER._size, MessageType.AddSettlement, 0 );
-			mMessageCtr.SetMessageData( MsgParam.UniqueId, settlementId );
-			mMessageCtr.SetMessageData( MsgParam.MiscVal, numSettlements );
-			mMessageCtr.SetMessageData( MsgParam.SenderSide, (int)mWhichSide );		//	we need to broadcast who sent it, because everybody should listen...
-			mMessageCtr.PostMessage();
-
-			mMessageCtr.AddMessage( OWNER.SYSTEM, MessageType.MessageHandled, 0 );
-			mMessageCtr.SetMessageData( MsgParam.UniqueId, (int)MessageType.PickSettlement );
-//			mMessageCtr.SetMessageData( MsgParam.MiscVal, settlementId );
-			mMessageCtr.SetMessageData( MsgParam.SenderSide, (int)mWhichSide );		//	we need to broadcast who sent it, because everybody should listen...
-			mMessageCtr.PostMessage();
+			mMessageCtr.SendMsgAddSettlement( mWhichSide, settlementId, numSettlements );
+			mMessageCtr.SendMsgMessageHandled( mWhichSide, MessageType.PickSettlement, numSettlements );
 		}
 
 		public	override	void	MsgPickSettlement( int msgTime, OWNER side )
 		{
 			if ( mIsUserControlled )
 			{
-				mMessageCtr.AddMessage( OWNER.SYSTEM, MessageType.StateRequest, 0 );
-				mMessageCtr.SetMessageData( MsgParam.UniqueId, (int)PlayGameMgr.STATE.PICK_BUILD_HEX );
-				mMessageCtr.SetMessageData( MsgParam.MiscVal, ( mNumAssetsUsed[(int)ASSET.SETTLEMENT] + 1 ) );
-				mMessageCtr.SetMessageData( MsgParam.SenderSide, (int)mWhichSide );		//	we need to broadcast who sent it, because everybody should listen...
-				mMessageCtr.PostMessage();
+				mMessageCtr.SendMsgStateRequest( mWhichSide, PlayGameMgr.STATE.PICK_BUILD_HEX, ( mNumAssetsUsed[(int)ASSET.SETTLEMENT] + 1 ) );
 			}
 			else
 			{
@@ -470,11 +449,7 @@ Debug.Assert( buildLoc.IsValidBuildLoc() );
 			SettlementLoc	settlementLoc = initialBuildLoc.GetSettlementLoc();	//	get settlement loc attached
 			if ( mIsUserControlled )
 			{
-				mMessageCtr.AddMessage( OWNER.SYSTEM, MessageType.StateRequest, 0 );
-				mMessageCtr.SetMessageData( MsgParam.UniqueId, (int)PlayGameMgr.STATE.PICK_ROAD_WAY_LOC );
-				mMessageCtr.SetMessageData( MsgParam.MiscVal, settlementLoc.GetUniqueId() );
-				mMessageCtr.SetMessageData( MsgParam.SenderSide, (int)mWhichSide );		//	we need to broadcast who sent it, because everybody should listen...
-				mMessageCtr.PostMessage();
+				mMessageCtr.SendMsgStateRequest( mWhichSide, PlayGameMgr.STATE.PICK_ROAD_WAY_LOC, settlementLoc.GetUniqueId() );
 			}
 			else
 			{
@@ -597,7 +572,6 @@ Debug.Assert( foundLoc );
 				_SetSettlementLocOwner( OWNER._size, adjSettlementId );
 			}
 		}
-
 
 
 	}

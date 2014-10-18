@@ -260,10 +260,7 @@ namespace Settlers_of_Catan
 				uniqueId = hexBase.GetUniqueId();
 				terrain = hexBase.GetTerrain();
 
-				mMessageCtr.AddMessage( OWNER._size, MessageType.InitTerrainSet, 0 );
-				mMessageCtr.SetMessageData( MsgParam.UniqueId, uniqueId );
-				mMessageCtr.SetMessageData( MsgParam.MiscVal, (int)terrain );
-				mMessageCtr.PostMessage();
+				mMessageCtr.SendMsgInitTerrainSet( uniqueId, terrain );
 			}
 		}
 
@@ -280,10 +277,7 @@ namespace Settlers_of_Catan
 				uniqueId = hexBase.GetUniqueId();
 				dieRoll = hexBase.GetDieRoll();
 
-				mMessageCtr.AddMessage( OWNER._size, MessageType.InitDieRollSet, 0 );
-				mMessageCtr.SetMessageData( MsgParam.UniqueId, uniqueId );
-				mMessageCtr.SetMessageData( MsgParam.MiscVal, dieRoll );
-				mMessageCtr.PostMessage();
+				mMessageCtr.SendMsgInitDieRollSet( uniqueId, dieRoll );
 			}
 		}
 
@@ -296,11 +290,7 @@ namespace Settlers_of_Catan
 			foreach ( RESOURCE resource in mPortResActive )
 			{
 				portEnum = (PORT)portIndex++;
-				mMessageCtr.AddMessage( OWNER._size, MessageType.InitPortLocSet, 0 );
-				mMessageCtr.SetMessageData( MsgParam.PortId, (int)portEnum );
-				mMessageCtr.SetMessageData( MsgParam.Resource, (int)resource );
-				mMessageCtr.PostMessage();
-
+				mMessageCtr.SendMsgInitPortLocSet( portEnum, resource );
 			}
 		}
 	}
