@@ -36,15 +36,15 @@ namespace Settlers_of_Catan
 			mTerrainArt[(int)TERRAIN.PASTURE] = new Bitmap[] { new Bitmap( "art//pasture.bmp") };
 			foreach ( Bitmap[] bmapArray in mTerrainArt )
 			{
-				_GfxArrayTrans( bmapArray );
+				Support.TransparentBmaps( bmapArray );
 			}
 			mDieRollArt = new Bitmap[] { null, null, new Bitmap( "art//roll2.bmp"), new Bitmap( "art//roll3.bmp"), new Bitmap( "art//roll4.bmp"), 
 										 new Bitmap( "art//roll5.bmp"), new Bitmap( "art//roll6.bmp"), null, 
 										 new Bitmap( "art//roll8.bmp"), new Bitmap( "art//roll9.bmp"), new Bitmap( "art//roll10.bmp"), 
 										 new Bitmap( "art//roll11.bmp"), new Bitmap( "art//roll12.bmp") };
-			_GfxArrayTrans( mDieRollArt );
+			Support.TransparentBmaps( mDieRollArt );
 			mPortArt = new Bitmap[] { new Bitmap( "art//port21brick.bmp") , new Bitmap( "art//port21grain.bmp"), new Bitmap( "art//port21lumber.bmp"), new Bitmap( "art//port21ore.bmp"), new Bitmap( "art//port21wool.bmp"), new Bitmap( "art//port31all.bmp") }; 
-			_GfxArrayTrans( mPortArt );
+			Support.TransparentBmaps( mPortArt );
 
 			int				dirLoop, adjLocId, dieRoll, locId;
 			DIR				dirEnum, oppositeDir;
@@ -78,16 +78,6 @@ namespace Settlers_of_Catan
 			mDieRollHits[7] = 0;	//	turn this off, we don't want to ever assign 'desert' via our randomization/set logics
 		}
 
-		private void	_GfxArrayTrans( Bitmap[] bmaps )
-		{
-			foreach ( Bitmap bmap in bmaps )
-			{
-				if ( bmap != null )
-				{
-					bmap.MakeTransparent();
-				}
-			}
-		}
 
 		public Bitmap	GenerateMapGfx( )
 		{

@@ -7,9 +7,15 @@ namespace Settlers_of_Catan
 	/// </summary>
 	public class LogicKernel
 	{
+		public enum TRACKING_INDEX
+		{
+			RESOURCES_GAINED,
+			RESOURCES_LOST,
+		}
 		private ResourceKernel		mResourceKernel;
 		private string				mPickLocData	= "PickLocData";
 		private string				mRoadData0		= "RoadData0";
+		private string				mTrackingAcc	= "TrackingAcc";
 
 		public LogicKernel(	ResourceKernel resKernel )
 		{
@@ -164,5 +170,15 @@ namespace Settlers_of_Catan
 			}
 			return ( roadWayTarget );
 		}
+
+		public	bool	CanTrackLogic( OWNER forSide, TRACKING_INDEX whichIndex )
+		{
+			int	trackingPctVal = mResourceKernel.GetValueFromSegment( mTrackingAcc, (int)whichIndex, (int)forSide );
+			bool canTrackLogic = ( Support.GetRandPct() < trackingPctVal );
+			return ( canTrackLogic );
+		}
+
+
+
 	}
 }

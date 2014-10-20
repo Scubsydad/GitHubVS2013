@@ -122,3 +122,13 @@ Friday, Oct 17
   - Thank Andrew for recommending 'GitHub', it just saved me when I started to make a refactor and touched variables I should not have, and had a good 'diff' for fix
   - Updated 'StateRequest' message to pass in a 'SettlementId' and a (already existing) 'MiscVal' so that I could broadcast more relevant information with state change
   - Updated all the 'SendMsgStateRequest' request and 'MsgStateRequest' function links to support the new param
+  - Added 'GameTurnInit' message & callbacks/triggers, so that each side could receive prompting to initialize itself for the coming turn.
+
+  Sunday, Oct 19
+  - Added 'AnimateStart', 'AnimateUpdate', 'AnimateFinish' messages & callbacks/triggers etc so that I could trigger some timer based anims
+  - Added 'LogicStateRequest' message type & callbacks/triggers so the 'SideLogic' class could process its logics via timed messages
+  - Added 'ResourceUpdate' message so logics/mtnc code can broadcast out changes to resource quantity for the various sides
+  -	Added 'TrackingAccuracy' tuning component so logic classes can determine whether they should be able to keep track/'remember' stuff that the other logics are doing
+  - Added 'LogicKernel::CanTrackLogic' function that takes in a OWNER & logic category index & compares against util val to see if it can store the results of a broadcast
+  - Added 'SideLogic::MsgResourceUpdate' function which tracks resources gained/lost for active side, and does random # die roll check for OTHER CPU opponents
+  - Added 'MessageCenter::SendMsgMessageHandledDelayed' to augment the non delayed one, so we can pass out a 'handled' message at some future time, not only 'now'

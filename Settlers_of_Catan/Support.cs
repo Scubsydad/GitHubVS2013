@@ -33,13 +33,21 @@ namespace Settlers_of_Catan
 
 		public Support()
 		{
-			foreach ( Bitmap bmap in mSettlementBmaps )
-			{
-				bmap.MakeTransparent();
-			}
+			TransparentBmaps( mSettlementBmaps );
 
 			TestSettlmentLocs();
 			_LinkSettlementDataToHexInfo();
+		}
+
+		static  public  void		TransparentBmaps( Bitmap[] bmaps )
+		{
+			foreach ( Bitmap bmap in bmaps )
+			{
+				if ( bmap != null )
+				{
+					bmap.MakeTransparent();
+				}
+			}
 		}
 
 		static  public  bool		IsQuestionTrue( string question, string heading )

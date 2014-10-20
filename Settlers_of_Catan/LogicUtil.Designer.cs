@@ -123,6 +123,10 @@
 			this.richTextBox6 = new System.Windows.Forms.RichTextBox();
 			this.SaveFileButton = new System.Windows.Forms.Button();
 			this.ValidationButton = new System.Windows.Forms.Button();
+			this.tabPage3 = new System.Windows.Forms.TabPage();
+			this.TrackingAccuracy0 = new System.Windows.Forms.RichTextBox();
+			this.richTextBox8 = new System.Windows.Forms.RichTextBox();
+			this.TrackingAccuracy1 = new System.Windows.Forms.RichTextBox();
 			this.LogicTabs.SuspendLayout();
 			this.tabPage1.SuspendLayout();
 			this.PickStartLocTabs.SuspendLayout();
@@ -133,12 +137,14 @@
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.mMapPictBox)).BeginInit();
 			this.tabPage2.SuspendLayout();
+			this.tabPage3.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// LogicTabs
 			// 
 			this.LogicTabs.Controls.Add(this.tabPage1);
 			this.LogicTabs.Controls.Add(this.tabPage2);
+			this.LogicTabs.Controls.Add(this.tabPage3);
 			this.LogicTabs.Location = new System.Drawing.Point(0, 0);
 			this.LogicTabs.Name = "LogicTabs";
 			this.LogicTabs.SelectedIndex = 0;
@@ -1103,7 +1109,7 @@
 			// 
 			// RoadData03
 			// 
-			this.RoadData03.Location = new System.Drawing.Point(220, 261);
+			this.RoadData03.Location = new System.Drawing.Point(223, 265);
 			this.RoadData03.Name = "RoadData03";
 			this.RoadData03.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
 			this.RoadData03.Size = new System.Drawing.Size(24, 16);
@@ -1113,7 +1119,7 @@
 			// label18
 			// 
 			this.label18.ForeColor = System.Drawing.Color.Green;
-			this.label18.Location = new System.Drawing.Point(301, 195);
+			this.label18.Location = new System.Drawing.Point(304, 199);
 			this.label18.Name = "label18";
 			this.label18.Size = new System.Drawing.Size(168, 28);
 			this.label18.TabIndex = 70;
@@ -1121,7 +1127,7 @@
 			// 
 			// RoadData02
 			// 
-			this.RoadData02.Location = new System.Drawing.Point(170, 195);
+			this.RoadData02.Location = new System.Drawing.Point(173, 199);
 			this.RoadData02.Name = "RoadData02";
 			this.RoadData02.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
 			this.RoadData02.Size = new System.Drawing.Size(128, 21);
@@ -1130,7 +1136,7 @@
 			// 
 			// RoadData01
 			// 
-			this.RoadData01.Location = new System.Drawing.Point(332, 171);
+			this.RoadData01.Location = new System.Drawing.Point(335, 175);
 			this.RoadData01.Name = "RoadData01";
 			this.RoadData01.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
 			this.RoadData01.Size = new System.Drawing.Size(128, 21);
@@ -1139,7 +1145,7 @@
 			// 
 			// RoadData00
 			// 
-			this.RoadData00.Location = new System.Drawing.Point(21, 151);
+			this.RoadData00.Location = new System.Drawing.Point(24, 155);
 			this.RoadData00.Name = "RoadData00";
 			this.RoadData00.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
 			this.RoadData00.Size = new System.Drawing.Size(24, 127);
@@ -1168,7 +1174,7 @@
 			this.richTextBox6.BackColor = System.Drawing.SystemColors.Control;
 			this.richTextBox6.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.richTextBox6.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.richTextBox6.Location = new System.Drawing.Point(0, 0);
+			this.richTextBox6.Location = new System.Drawing.Point(3, 4);
 			this.richTextBox6.Name = "richTextBox6";
 			this.richTextBox6.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
 			this.richTextBox6.Size = new System.Drawing.Size(1108, 637);
@@ -1196,6 +1202,50 @@
 			this.ValidationButton.UseVisualStyleBackColor = true;
 			this.ValidationButton.Click += new System.EventHandler(this._ValidationRequest);
 			// 
+			// tabPage3
+			// 
+			this.tabPage3.BackColor = System.Drawing.SystemColors.Control;
+			this.tabPage3.Controls.Add(this.TrackingAccuracy1);
+			this.tabPage3.Controls.Add(this.TrackingAccuracy0);
+			this.tabPage3.Controls.Add(this.richTextBox8);
+			this.tabPage3.Location = new System.Drawing.Point(4, 22);
+			this.tabPage3.Name = "tabPage3";
+			this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+			this.tabPage3.Size = new System.Drawing.Size(1114, 666);
+			this.tabPage3.TabIndex = 2;
+			this.tabPage3.Text = "Logic Choices";
+			// 
+			// TrackingAccuracy0
+			// 
+			this.TrackingAccuracy0.Location = new System.Drawing.Point(148, 25);
+			this.TrackingAccuracy0.Name = "TrackingAccuracy0";
+			this.TrackingAccuracy0.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
+			this.TrackingAccuracy0.Size = new System.Drawing.Size(166, 16);
+			this.TrackingAccuracy0.TabIndex = 71;
+			this.TrackingAccuracy0.Text = "90\t90\t90\t90";
+			// 
+			// richTextBox8
+			// 
+			this.richTextBox8.BackColor = System.Drawing.SystemColors.Control;
+			this.richTextBox8.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.richTextBox8.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.richTextBox8.Location = new System.Drawing.Point(3, 4);
+			this.richTextBox8.Name = "richTextBox8";
+			this.richTextBox8.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
+			this.richTextBox8.Size = new System.Drawing.Size(1108, 637);
+			this.richTextBox8.TabIndex = 70;
+			this.richTextBox8.Text = "Tracking Accuracy \n\t\t\tBlue\tOrange\tRed\tSilver\nResources Gained\n\nResources Lost";
+			this.richTextBox8.WordWrap = false;
+			// 
+			// TrackingAccuracy1
+			// 
+			this.TrackingAccuracy1.Location = new System.Drawing.Point(148, 44);
+			this.TrackingAccuracy1.Name = "TrackingAccuracy1";
+			this.TrackingAccuracy1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
+			this.TrackingAccuracy1.Size = new System.Drawing.Size(166, 16);
+			this.TrackingAccuracy1.TabIndex = 72;
+			this.TrackingAccuracy1.Text = "90\t90\t90\t90";
+			// 
 			// LogicUtil
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1218,6 +1268,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.mMapPictBox)).EndInit();
 			this.tabPage2.ResumeLayout(false);
+			this.tabPage3.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -1318,5 +1369,9 @@
 		private System.Windows.Forms.RichTextBox RoadData02;
 		private System.Windows.Forms.RichTextBox RoadData01;
 		private System.Windows.Forms.RichTextBox RoadData00;
+		private System.Windows.Forms.TabPage tabPage3;
+		private System.Windows.Forms.RichTextBox TrackingAccuracy1;
+		private System.Windows.Forms.RichTextBox TrackingAccuracy0;
+		private System.Windows.Forms.RichTextBox richTextBox8;
 	}
 }

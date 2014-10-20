@@ -341,7 +341,7 @@ namespace Settlers_of_Catan
 			}
 		}
 
-		private	void	__AddMessage( Message message )
+		private	void	_AddMessage( Message message )
 		{
 			mMessageStorage.Add( message );
 
@@ -361,42 +361,69 @@ namespace Settlers_of_Catan
 
 		//public	override	void	MsgRender( int msgTime )
 		//{
-		//	__AddMessage( new Message( OWNER.INVALID, mMessageStorage.Count, msgTime, MessageType.Render ) );
+		//	_AddMessage( new Message( OWNER.INVALID, mMessageStorage.Count, msgTime, MessageType.Render ) );
 		//}
 
 		//public	override	void	MsgCoordOccupied( int msgTime, OWNER side, Point coord, int uniqueId )
 		//{
-		//	__AddMessage( new Message( side, mMessageStorage.Count, msgTime, MessageType.CoordOccupied, coord, string.Format("Unit : {0}", uniqueId ) ) );
+		//	_AddMessage( new Message( side, mMessageStorage.Count, msgTime, MessageType.CoordOccupied, coord, string.Format("Unit : {0}", uniqueId ) ) );
 		//}
 
 		public	override	void	MsgRenderMap( int msgTime )
 		{
-			__AddMessage( new Message( OWNER.MANAGER, mMessageStorage.Count, msgTime, MessageType.RenderMap ) );
+			_AddMessage( new Message( OWNER.MANAGER, mMessageStorage.Count, msgTime, MessageType.RenderMap ) );
 		}
 
 		public	override	void	MsgInitGameSide( int msgTime, OWNER whichSide ) 
 		{
-			__AddMessage( new Message( whichSide, mMessageStorage.Count, msgTime, MessageType.InitGameSide ) );
+			_AddMessage( new Message( whichSide, mMessageStorage.Count, msgTime, MessageType.InitGameSide ) );
 		}
 
 		public	override	void	MsgGameTurnInit( int msgTime, OWNER whichSide, int turnNumber )
 		{
-			__AddMessage( new Message( whichSide, mMessageStorage.Count, msgTime, MessageType.GameTurnInit, string.Format("Turn # {0}", turnNumber ) ) );
+			_AddMessage( new Message( whichSide, mMessageStorage.Count, msgTime, MessageType.GameTurnInit, string.Format("Turn # {0}", turnNumber ) ) );
 		}
 
 		public	override	void	MsgPickRoadWay( int msgTime, OWNER whichSide ) 
 		{
-			__AddMessage( new Message( whichSide, mMessageStorage.Count, msgTime, MessageType.PickRoadWay ) );
+			_AddMessage( new Message( whichSide, mMessageStorage.Count, msgTime, MessageType.PickRoadWay ) );
 		}
 
 		public	override	void	MsgPickSettlement( int msgTime, OWNER whichSide ) 
 		{
-			__AddMessage( new Message( whichSide, mMessageStorage.Count, msgTime, MessageType.PickSettlement ) );
+			_AddMessage( new Message( whichSide, mMessageStorage.Count, msgTime, MessageType.PickSettlement ) );
+		}
+
+		public	override	void	MsgAnimateStart( int msgTime, OWNER whoFor ) 
+		{
+			_AddMessage( new Message( OWNER.MANAGER, mMessageStorage.Count, msgTime, MessageType.AnimateStart, whoFor.ToString() ) );
+		}
+		public	override	void	MsgAnimateUpdate( int msgTime, bool wantThinkingGfx )
+		{
+			string gfxDesc = "Hide Gfx";
+			if ( wantThinkingGfx ) { gfxDesc = "SHOW Gfx"; }
+			_AddMessage( new Message( OWNER.MANAGER, mMessageStorage.Count, msgTime, MessageType.AnimateUpdate, gfxDesc ) );
+		}
+		public	override	void	MsgAnimateFinish( int msgTime )
+		{
+			_AddMessage( new Message( OWNER.MANAGER, mMessageStorage.Count, msgTime, MessageType.AnimateFinish ) );
+		}
+
+		public	override	void	MsgLogicStateRequest( int msgTime, OWNER sender, SideLogic.LOGIC_STATE stateEnum )
+		{
+			_AddMessage( new Message( sender, mMessageStorage.Count, msgTime, MessageType.LogicStateRequest, stateEnum.ToString() ) );
+		}
+
+		public	override	void	MsgResourceUpdate( int msgTime, OWNER sender, RESOURCE resource, int quantityMod )
+		{
+			string signDec = "";	//	assume negative by default
+			if ( quantityMod >= 1 )	{ signDec = "+"; }
+			_AddMessage( new Message( sender, mMessageStorage.Count, msgTime, MessageType.ResourceUpdate, string.Format("{0} {1}{2}",  resource.ToString(), signDec, quantityMod ) ) );
 		}
 
 		public	override	void	MsgRandomNumSeed( int msgTime, int miscVal )
 		{
-			__AddMessage( new Message( OWNER.INVALID, mMessageStorage.Count, msgTime, MessageType.RandomNumSeed, miscVal.ToString() ) );
+			_AddMessage( new Message( OWNER.INVALID, mMessageStorage.Count, msgTime, MessageType.RandomNumSeed, miscVal.ToString() ) );
 		}
 
 		private void _InitMsgParse( int msgTime, bool wantRandom, MessageType msgType, string regDesc, string randomDesc )
@@ -406,7 +433,7 @@ namespace Settlers_of_Catan
 			{
 				miscDesc = randomDesc;
 			}
-			__AddMessage( new Message( OWNER.INVALID, mMessageStorage.Count, msgTime, msgType, miscDesc ) );
+			_AddMessage( new Message( OWNER.INVALID, mMessageStorage.Count, msgTime, msgType, miscDesc ) );
 		}
 
 		public override void	MsgInitPortLocRequest( int msgTime, bool wantRandom )
@@ -426,12 +453,12 @@ namespace Settlers_of_Catan
 
 		public	override	void	MsgInitDieRollSet( int msgTime, int uniqueId, int dieRoll )
 		{
-			__AddMessage( new Message( OWNER.INVALID, mMessageStorage.Count, msgTime, MessageType.InitDieRollSet, uniqueId, dieRoll.ToString() ) );
+			_AddMessage( new Message( OWNER.INVALID, mMessageStorage.Count, msgTime, MessageType.InitDieRollSet, uniqueId, dieRoll.ToString() ) );
 		}
 
 		public	override	void	MsgInitTerrainSet( int msgTime, int uniqueId, TERRAIN terrain )
 		{
-			__AddMessage( new Message( OWNER.INVALID, mMessageStorage.Count, msgTime, MessageType.InitTerrainSet, uniqueId, terrain.ToString() ) );
+			_AddMessage( new Message( OWNER.INVALID, mMessageStorage.Count, msgTime, MessageType.InitTerrainSet, uniqueId, terrain.ToString() ) );
 		}
 
 		public	override	void	MsgInitPortLocSet( int msgTime, PORT portId, RESOURCE portResource )
@@ -442,18 +469,18 @@ namespace Settlers_of_Catan
 				resDesc = "3-1 ?";
 			}
 			resDesc = string.Format("Port {0} : {1}", (int)portId, resDesc );
-			__AddMessage( new Message( OWNER.INVALID, mMessageStorage.Count, msgTime, MessageType.InitPortLocSet, resDesc ) );
+			_AddMessage( new Message( OWNER.INVALID, mMessageStorage.Count, msgTime, MessageType.InitPortLocSet, resDesc ) );
 		}
 
 		public	override	void	MsgAddRoadWay( int msgTime, OWNER whichSide, int settlementId, CITY_DIR whichDir )
 		{
-			__AddMessage( new Message( whichSide, mMessageStorage.Count, msgTime, MessageType.AddRoadWay, -1, whichDir.ToString(), string.Format("LocId {0}", settlementId ) ) );
+			_AddMessage( new Message( whichSide, mMessageStorage.Count, msgTime, MessageType.AddRoadWay, -1, whichDir.ToString(), string.Format("LocId {0}", settlementId ) ) );
 		}
 
 
 		public	override	void	MsgAddSettlement( int msgTime, OWNER whichSide, int settlementId, int numActive )
 		{
-			__AddMessage( new Message( whichSide, mMessageStorage.Count, msgTime, MessageType.AddSettlement, string.Format("LocId {0} : # {1}", settlementId, numActive ) ) );
+			_AddMessage( new Message( whichSide, mMessageStorage.Count, msgTime, MessageType.AddSettlement, string.Format("LocId {0} : # {1}", settlementId, numActive ) ) );
 		}
 
 		public	override	void	MsgMessageHandled( int msgTime, OWNER sender, MessageType whichMessage, int miscVal )
@@ -463,7 +490,7 @@ namespace Settlers_of_Catan
 			{
 				miscDesc = miscVal.ToString();
 			}
-			__AddMessage( new Message( sender, mMessageStorage.Count, msgTime, MessageType.MessageHandled, whichMessage.ToString() ) );
+			_AddMessage( new Message( sender, mMessageStorage.Count, msgTime, MessageType.MessageHandled, whichMessage.ToString() ) );
 		}
 
 		public	override	void	MsgStateRequest( int msgTime, OWNER sender, PlayGameMgr.STATE whichState, int settlementId, int miscVal )
@@ -478,7 +505,7 @@ namespace Settlers_of_Catan
 			{
 				miscDesc = string.Format( "({0})", miscVal.ToString() );
 			}
-			__AddMessage( new Message( sender, mMessageStorage.Count, msgTime, MessageType.StateRequest, string.Format("{0}{1}{2}", whichState.ToString(), settlementDesc, miscDesc ) ) );
+			_AddMessage( new Message( sender, mMessageStorage.Count, msgTime, MessageType.StateRequest, string.Format("{0}{1}{2}", whichState.ToString(), settlementDesc, miscDesc ) ) );
 		}
 
 	}

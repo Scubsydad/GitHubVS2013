@@ -92,6 +92,20 @@ namespace Settlers_of_Catan
 			maxVals = new int[]		   {  70,      0,					 0,					  5		  };
 			mUtilMgr.RegisterDataSegments("RoadData0", new DataSegments( translation, new RichTextBox[] { RoadData00, RoadData01, RoadData02, RoadData03 }, minVals, maxVals ) );
 
+			translation = new object[] {  box2416,box2416 };
+			minVals = new int[]		   {  10,      10       };
+			maxVals = new int[]		   {  100,     100		};
+			controls = mUtilMgr.RegisterDataSegments("TrackingAcc", new DataSegments( translation, new RichTextBox[] { TrackingAccuracy0, TrackingAccuracy1 }, minVals, maxVals ) );
+			TextBox textBox;
+			for ( int i = 0; i < controls.Length; ++i )
+			{
+				textBox = (TextBox)controls[i][(int)mWhichSide];
+				textBox.Text = "100";
+				textBox.Enabled = false;
+			}
+
+			
+
 			if ( mUtilMgr.CheckLoadBrkFile() )
 			{
 				RefreshInternals();

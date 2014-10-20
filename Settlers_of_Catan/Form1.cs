@@ -234,7 +234,6 @@ namespace Settlers_of_Catan
 			mMessageHistory = null;
 			mPlayGameMgr = mPlayGameMgr.ShutDown();
 			mMessageCenter = null;
-
 		}
 
 		private void _StartGamePrep()

@@ -57,6 +57,10 @@ namespace Settlers_of_Catan
 
 					case	MessageType.AddRoadWay			:	MsgAddRoadWay( timeStamp, _GetMessageSender(), _GetMessageData( MsgParam.UniqueId ), (CITY_DIR)_GetMessageData( MsgParam.MiscVal ) );	break;
 
+					case	MessageType.AnimateStart		:	MsgAnimateStart( timeStamp, (OWNER)_GetMessageData( MsgParam.MiscVal ) );		break;
+					case	MessageType.AnimateUpdate		:	MsgAnimateUpdate( timeStamp, ( _GetMessageData( MsgParam.MiscVal ) == 1 ) );	break;
+					case	MessageType.AnimateFinish		:	MsgAnimateFinish( timeStamp );													break;
+
 					case	MessageType.AddSettlement		:	MsgAddSettlement( timeStamp, _GetMessageSender(), _GetMessageData( MsgParam.UniqueId ), _GetMessageData( MsgParam.MiscVal ) );	break;
 
 					case	MessageType.GameTurnInit		:	MsgGameTurnInit( timeStamp, _GetMessageOwner(), _GetMessageData( MsgParam.MiscVal ) );					break;
@@ -71,11 +75,15 @@ namespace Settlers_of_Catan
 
 					case	MessageType.InitTerrainRequest	:	MsgInitTerrainRequest( timeStamp, (_GetMessageData( MsgParam.MiscVal ) != 0 ) );	break;
 
+					case	MessageType.LogicStateRequest	:	MsgLogicStateRequest( timeStamp, _GetMessageSender(), (SideLogic.LOGIC_STATE)_GetMessageData( MsgParam.MiscVal ) );	break;
+
 					case	MessageType.MessageHandled		:	MsgMessageHandled( timeStamp, _GetMessageSender(), (MessageType)_GetMessageData( MsgParam.UniqueId ), _GetMessageData( MsgParam.MiscVal ) );	break;
 
 					case	MessageType.StateRequest		:	MsgStateRequest( timeStamp, _GetMessageSender(), (PlayGameMgr.STATE)_GetMessageData( MsgParam.UniqueId ), _GetMessageData( MsgParam.SettlementId ), _GetMessageData( MsgParam.MiscVal ) );	break;
 
 					case	MessageType.RandomNumSeed		:	MsgRandomNumSeed( timeStamp, _GetMessageData( MsgParam.MiscVal ) );	break;
+
+					case	MessageType.ResourceUpdate		:	MsgResourceUpdate( timeStamp, _GetMessageSender(), (RESOURCE)_GetMessageData( MsgParam.Resource ), _GetMessageData( MsgParam.MiscVal ) );	break;
 
 					case	MessageType.InitTerrainSet		:	MsgInitTerrainSet( timeStamp, _GetMessageData( MsgParam.UniqueId ), (TERRAIN)_GetMessageData( MsgParam.MiscVal ) );	break;
 
@@ -100,11 +108,16 @@ Debug.Assert( !mAssertIfNotHandled );
 		public	virtual	void	MsgRenderMap( int msgTime ) { _ConfirmHandled(); }
 		public	virtual	void	MsgAddRoadWay( int msgTime, OWNER side, int settlementId, CITY_DIR whichDir ) { _ConfirmHandled(); }
 		public	virtual	void	MsgAddSettlement( int msgTime, OWNER side, int settlementId, int numActive ) { _ConfirmHandled(); }
+		public	virtual	void	MsgAnimateStart( int msgTime, OWNER whoFor ) { _ConfirmHandled(); }
+		public	virtual	void	MsgAnimateUpdate( int msgTime, bool wantThinkingGfx ) { _ConfirmHandled(); }
+		public	virtual	void	MsgAnimateFinish( int msgTime ) { _ConfirmHandled(); }
 		public	virtual	void	MsgGameTurnInit( int msgTime, OWNER whichSide, int turnNumber ) { _ConfirmHandled(); }
 		public	virtual	void	MsgInitDieRollRequest( int msgTime, bool wantRandom ) { _ConfirmHandled(); }
 		public	virtual	void	MsgInitPortLocRequest( int msgTime, bool wantRandom ) { _ConfirmHandled(); }
 		public	virtual	void	MsgInitTerrainRequest( int msgTime, bool wantRandom ) { _ConfirmHandled(); }
+		public	virtual	void	MsgLogicStateRequest( int msgTime, OWNER sender, SideLogic.LOGIC_STATE stateEnum ) { _ConfirmHandled(); }
 		public	virtual	void	MsgRandomNumSeed( int msgTime, int miscVal ) { _ConfirmHandled(); }
+		public	virtual	void	MsgResourceUpdate( int msgTime, OWNER sender, RESOURCE resource, int quantityMod ) { _ConfirmHandled(); }
 		public	virtual	void	MsgInitTerrainSet( int msgTime, int uniqueId, TERRAIN terrain ) { _ConfirmHandled(); }
 		public	virtual	void	MsgInitDieRollSet( int msgTime, int uniqueId, int dieRoll ) { _ConfirmHandled(); }
 		public	virtual	void	MsgInitPortLocSet( int msgTime, PORT portId, RESOURCE portResource ) { _ConfirmHandled(); }

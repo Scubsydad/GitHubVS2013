@@ -9,10 +9,17 @@ namespace Settlers_of_Catan
 {
 	public class SideLogic	:	MessageHandler
 	{
+		public enum LOGIC_STATE
+		{
+			DORMANT,
+			RESOURCE_ANALYSIS,
+			BUILD_ANALYSIS,
+
+		};
 
 		private OWNER			mWhichSide;
 		private	bool			mIsUserControlled;
-		private int				mNumPlayers;
+		private int				mNumPlayers, mTurnNumber;
 		private MessageCenter	mMessageCtr;
 		private HexInfo[]		mHexInfo;
 		private int[]			mNumAssetsAvail;
@@ -20,6 +27,9 @@ namespace Settlers_of_Catan
 		private LogicKernel		mLogicKernel;
 		private ArrayList		mBuildLocs = new ArrayList();
 		private PathFinder		mPathFinder;
+		private LOGIC_STATE		mLogicState = LOGIC_STATE.DORMANT;
+		private int[,]			mNumRescources = new int[(int)OWNER._size,(int)RESOURCE._size];
+
 		public	SideLogic( OWNER whichSide, LogicKernel logicKernel, HexInfo[] hexInfos )	:	base ( whichSide, false )
 		{
 			mWhichSide = whichSide;
@@ -573,9 +583,78 @@ Debug.Assert( foundLoc );
 			}
 		}
 
+		private void _AddInitialResources()
+		{
+			BuildLoc		secondBuildLoc = _GetBuildLoc( 1 );							//	get our second build location
+			SettlementLoc	secondSettlementLoc = secondBuildLoc.GetSettlementLoc();	//	extract the settlement
+			int				numSharedHexes = secondSettlementLoc.GetNumHexesShareSettlement();
+			int				hexId;
+			HexInfo			hexInfo;
+			RESOURCE		earneResource;
+			for ( int i = 0; i < numSharedHexes; ++i )
+			{
+				hexId = secondSettlementLoc.GetShareSettlementHexId( i );				//	grab each hex that shares this location
+				hexInfo = mHexInfo[hexId];
+				earneResource = hexInfo.GetEarnResource();
+				mMessageCtr.SendMsgResourceUpdate( mWhichSide, earneResource, 1 );
+			}
+		}
+
+		private void _PrepInitTurnStates( int turnNumber )
+		{
+			mTurnNumber = turnNumber;		//	track this in case we want to do different things in 'later turns'?
+
+			mMessageCtr.SendMsgAnimateStart( mWhichSide );	//	start anim cycle for this side...
+			mMessageCtr.SendMsgAnimateUpdate( 2, true  );		//	SHOW the 'thinking' gfx...
+			mMessageCtr.SendMsgLogicStateRequest( 3, mWhichSide, LOGIC_STATE.RESOURCE_ANALYSIS );
+			mMessageCtr.SendMsgLogicStateRequest( 13, mWhichSide, LOGIC_STATE.BUILD_ANALYSIS );
+			mMessageCtr.SendMsgAnimateUpdate( 50, false  );		//	hide the 'thinking' gfx...
+			mMessageCtr.SendMsgAnimateUpdate( 70, true  );		//	SHOW the 'thinking' gfx...
+			mMessageCtr.SendMsgAnimateUpdate( 120, false  );	//	hide the 'thinking' gfx...
+			mMessageCtr.SendMsgAnimateUpdate( 140, true  );		//	SHOW the 'thinking' gfx...
+			mMessageCtr.SendMsgAnimateFinish( 190 );			//	FINISH anim cycle...
+
+			mMessageCtr.SendMsgMessageHandledDelayed( 200, mWhichSide, MessageType.GameTurnInit, turnNumber );
+
+		}
 		public	override	void	MsgGameTurnInit( int msgTime, OWNER whichSide, int turnNumber )
 		{
-			mMessageCtr.SendMsgMessageHandled( mWhichSide, MessageType.GameTurnInit, turnNumber );
+			if ( turnNumber == 0 )	//	if this is 'turn zero' then we need to add our second settlement resources now
+			{
+				_AddInitialResources();
+			}
+			_PrepInitTurnStates( turnNumber );
+		}
+
+		public	override	void	MsgLogicStateRequest( int msgTime, OWNER sender, SideLogic.LOGIC_STATE stateEnum )
+		{
+			mLogicState = stateEnum;
+		}
+
+		public	override	void	MsgResourceUpdate( int msgTime, OWNER sender, RESOURCE resource, int quantityMod )
+		{
+			if ( sender == mWhichSide )	//	if its our resources being adjusted, just do math in one go, we automatically can 'track it'
+			{
+				mNumRescources[(int)sender,(int)resource] += quantityMod;
+			}
+			else // for opponent tracking, call ONCE per resource count, giving mulitple chances to 'hit' rather than throwing EVERYTHING away if 'false'
+			{
+				int							adjustor = 1;
+				LogicKernel.TRACKING_INDEX	trackingIndex = LogicKernel.TRACKING_INDEX.RESOURCES_GAINED;	//	asume gained by default
+				if ( quantityMod < 0 ) 
+				{ 
+					adjustor = -1;
+					trackingIndex = LogicKernel.TRACKING_INDEX.RESOURCES_LOST;								//	use lost index instead if applicable
+					quantityMod = Math.Abs( quantityMod );													//	convert loop to positive value
+				}
+				for ( int i = 0; i < quantityMod; ++i )
+				{
+					if ( mLogicKernel.CanTrackLogic( sender, trackingIndex ) )								//	see if we can keep track of the resources
+					{
+						mNumRescources[(int)sender,(int)resource] += adjustor;								//	add +1/-1 <x> times to build a potentially partial summary of value
+					}
+				}		
+			}
 		}
 
 	}

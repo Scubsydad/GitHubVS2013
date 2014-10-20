@@ -20,25 +20,30 @@ namespace Settlers_of_Catan
 			_size
 		};
 
-		SideLogic[]		mPlayerLogics;
-		MessageCenter	mMessageCtr;
-		int				mTurnNumber = 0, mNumPlayers, mHexNumChosen, mSettlementBuildIndex, mSettlementId;
-		int[]			mClickLocRadius;
-		Point[]			mClickLocCenterPoint;
-		ArrayList		mTabStorage = new ArrayList(), mPlacementOrder = new ArrayList(), mTurnOrder = new ArrayList();
-		PictureBox		mPlayGamePictBox;
-		MapManager		mMapManager;
-		STATE			mCurrentState = STATE.DORMANT;
-		OWNER			mStateOwner = OWNER.INVALID;
-		Color[]			mHexBuildHelpColors = new Color[] { Color.Chartreuse, Color.YellowGreen, Color.Yellow, Color.Orange, Color.Red };
-		HexInfo[]		mGfxLocHexArray = Support.GetHexInfoCopy();
-		TabControl		mStateExplainTabs;
-		Point[][]		mBuilLocs = new Point[19][];
-		Point[][]		mHexDrawGfxLocs = new Point[19][];
-		PathFinder		mPathFinder;
+		SideLogic[]			mPlayerLogics;
+		MessageCenter		mMessageCtr;
+		int					mTurnNumber = 0, mTimerTicks = 0, mNumPlayers, mHexNumChosen, mSettlementBuildIndex, mSettlementId;
+		int[]				mClickLocRadius;
+		Point[]				mClickLocCenterPoint;
+		ArrayList			mTabStorage = new ArrayList(), mPlacementOrder = new ArrayList(), mTurnOrder = new ArrayList();
+		PictureBox			mPlayGamePictBox;
+		MapManager			mMapManager;
+		STATE				mCurrentState = STATE.DORMANT;
+		OWNER				mStateOwner = OWNER.INVALID, mAnimOwner = OWNER.INVALID;
+		Color[]				mHexBuildHelpColors = new Color[] { Color.Chartreuse, Color.YellowGreen, Color.Yellow, Color.Orange, Color.Red };
+		HexInfo[]			mGfxLocHexArray = Support.GetHexInfoCopy();
+		TabControl			mStateExplainTabs;
+		Point[][]			mBuilLocs = new Point[19][];
+		Point[][]			mHexDrawGfxLocs = new Point[19][];
+		PathFinder			mPathFinder;
+		Bitmap[]			mThinkingBmaps = new Bitmap[] { new Bitmap( "art//blue_thinking.png"), new Bitmap( "art//orange_thinking.png"), new Bitmap( "art//red_thinking.png"), new Bitmap( "art//silver_thinking.png") };
+		System.Timers.Timer	mMsgTimer;
+		bool				mActiveTimer = false, mGamePaused = false;
 
 		public PlayGameMgr( MessageCenter msgCenter, int numPlayers, CONTROL[] control, MapManager mapMgr, PictureBox pictBox, TabControl stateExplainTabs )	:	base ( OWNER.MANAGER, false )
 		{
+			Support.TransparentBmaps( mThinkingBmaps );
+
 			mMessageCtr = msgCenter;
 			mNumPlayers = numPlayers;
 			mPlayerLogics = new SideLogic[mNumPlayers];
@@ -91,8 +96,23 @@ namespace Settlers_of_Catan
 				mHexDrawGfxLocs[i] = drawArray;
 
 			}
+			mMsgTimer = new System.Timers.Timer( 10 );
+			mMsgTimer.Elapsed += new System.Timers.ElapsedEventHandler(mMsgTimer_Elapsed);
+	//		mMsgTimer.Start();
+
 		}
 
+		private void mMsgTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+		{
+			if ( ( !mActiveTimer ) && ( !mGamePaused ))
+			{
+				mActiveTimer = true;
+				mMsgTimer.Stop();
+				mMessageCtr.TimerTask( ++mTimerTicks );
+				mMsgTimer.Start();
+				mActiveTimer = false;
+			}
+		}
 		void _SetState( STATE newState, OWNER whichOwner )
 		{
 			if ( mStateExplainTabs.TabCount != 0 )
@@ -296,7 +316,7 @@ Debug.Assert( firstInQueue == whichSide );				//	always ensure the first one in 
 
 		private void        _NewStateChangeRequest( PlayGameMgr.STATE whichState, OWNER forSide, int settlementId, int miscVal )
 		{
-			string		explainMsg = "", miscStr1 = "", headerMsg = string.Format( "Attention {0}!", forSide.ToString() ) ;
+			string		explainMsg = "", headerMsg = string.Format( "Attention {0}!", forSide.ToString() ) ;
 			Bitmap		bmap = _DoMapDraw();
 			Size		bmapSize = bmap.Size;
 			Graphics	gfx = Graphics.FromImage( bmap );
@@ -307,13 +327,12 @@ Debug.Assert( firstInQueue == whichSide );				//	always ensure the first one in 
 			if ( whichState == STATE.PICK_BUILD_HEX )
 			{
 				mHexNumChosen = -1;
-				miscStr1 = "first";
+				explainMsg = "Attention, it is now your turn to place your FIRST settlement.";
 				mSettlementBuildIndex = miscVal;
 				if ( mSettlementBuildIndex == 2 )
 				{
-					miscStr1 = "second";
+					explainMsg ="        Attention, now you may place your SECOND settlement.\n\nPlace wisely, this settlement will provide your initial resources.";
 				}
-				explainMsg = string.Format( "Attention, it is now your turn to place your {0} settlement.", miscStr1 );
 
 				Point[]			topCandidatesList = sideLogic.GetSettlementTopChoices( mHexBuildHelpColors.Length );
 				int				candidateLoop;
@@ -515,6 +534,37 @@ Debug.Assert( turnNumber == mTurnNumber );
 			{
 				mMessageCtr.SendMsgGameTurnInit( (OWNER)mTurnOrder[playerIndex], turnNumber );		//	daisy chain each init based on completion of previous player
 			}		
+		}
+
+		private void		_StartTimer()
+		{
+			mMsgTimer.Start();
+		}
+		private void		_StopTimer()
+		{
+			mMsgTimer.Stop();
+		}
+
+		public	override	void	MsgAnimateStart( int msgTime, OWNER whoFor ) 
+		{
+			mAnimOwner = whoFor;
+			_StartTimer();
+		}
+
+		public	override	void	MsgAnimateUpdate( int msgTime, bool wantThinkingGfx )
+		{
+			Bitmap bmap = _DoMapDraw();
+			if ( wantThinkingGfx )
+			{
+				Graphics gfx = Graphics.FromImage( bmap );
+				gfx.DrawImage( mThinkingBmaps[(int)mAnimOwner], 200, 200 );
+			}
+		}
+
+		public	override	void	MsgAnimateFinish( int msgTime )
+		{
+			mAnimOwner = OWNER.INVALID;
+			_StopTimer();
 		}
 
 	}

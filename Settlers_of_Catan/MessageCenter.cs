@@ -17,6 +17,10 @@ namespace Settlers_of_Catan
 		AddRoadWay,
 		AddSettlement,
 
+		AnimateFinish,
+		AnimateStart,
+		AnimateUpdate,
+
 		GameTurnInit,
 
 		InitDieRollRequest,
@@ -28,13 +32,17 @@ namespace Settlers_of_Catan
 		InitTerrainSet,
 		InitPortLocSet,
 
+		LogicStateRequest,
+
 		MessageHandled,				//	confirmation that a particular message has been handled, if we don't want to create specifics for each type.
 
 		PickSettlement,
 		PickRoadWay,
 
+
 		RandomNumSeed,
 		RenderMap,
+		ResourceUpdate,
 
 		StateRequest,
 
@@ -101,33 +109,42 @@ namespace Settlers_of_Catan
 
 			mLastInList = mFirstInList = mMessageBuffer[0];
 
-			MsgParam[] whichSideDesc = new MsgParam[] { MsgParam.WhichSide };	// 'whichSide' added automatically by '__AddMessage' if not present, but make it obvious here
-			__AddMessageType( MessageType.InitGameSide, whichSideDesc );
-			__AddMessageType( MessageType.PickRoadWay, whichSideDesc );
-			__AddMessageType( MessageType.PickSettlement, whichSideDesc );
-			__AddMessageType( MessageType.InitTurnSide, whichSideDesc );
-			__AddMessageType( MessageType.RenderMap, whichSideDesc );
+			MsgParam[] whichSideDesc = new MsgParam[] { MsgParam.WhichSide };	// 'whichSide' added automatically by '_AddMessage' if not present, but make it obvious here
+			_AddMessageType( MessageType.InitGameSide, whichSideDesc );
+			_AddMessageType( MessageType.PickRoadWay, whichSideDesc );
+			_AddMessageType( MessageType.PickSettlement, whichSideDesc );
+			_AddMessageType( MessageType.InitTurnSide, whichSideDesc );
+			_AddMessageType( MessageType.RenderMap, whichSideDesc );
 
 			MsgParam[] miscValDesc = new MsgParam[] { MsgParam.MiscVal };
-			__AddMessageType( MessageType.RandomNumSeed, miscValDesc );
-			__AddMessageType( MessageType.InitTerrainRequest, miscValDesc );
-			__AddMessageType( MessageType.InitDieRollRequest, miscValDesc );
-			__AddMessageType( MessageType.InitPortLocRequest, miscValDesc );
-			__AddMessageType( MessageType.GameTurnInit, miscValDesc );
+			_AddMessageType( MessageType.RandomNumSeed, miscValDesc );
+			_AddMessageType( MessageType.InitTerrainRequest, miscValDesc );
+			_AddMessageType( MessageType.InitDieRollRequest, miscValDesc );
+			_AddMessageType( MessageType.InitPortLocRequest, miscValDesc );
+			_AddMessageType( MessageType.GameTurnInit, miscValDesc );
+			_AddMessageType( MessageType.LogicStateRequest, miscValDesc );
 			
 			MsgParam[] hexLocVallDesc = new MsgParam[] { MsgParam.UniqueId, MsgParam.MiscVal };
-			__AddMessageType( MessageType.InitDieRollSet, hexLocVallDesc );
-			__AddMessageType( MessageType.InitTerrainSet, hexLocVallDesc );
+			_AddMessageType( MessageType.InitDieRollSet, hexLocVallDesc );
+			_AddMessageType( MessageType.InitTerrainSet, hexLocVallDesc );
 
-			MsgParam[] senderValDesc = new MsgParam[] { MsgParam.UniqueId, MsgParam.MiscVal, MsgParam.SenderSide };
-			__AddMessageType( MessageType.AddRoadWay, senderValDesc );
-			__AddMessageType( MessageType.AddSettlement, senderValDesc );
-			__AddMessageType( MessageType.MessageHandled, senderValDesc );
+			MsgParam[] senderValDesc = new MsgParam[] { MsgParam.MiscVal, MsgParam.SenderSide };
+			_AddMessageType( MessageType.AnimateStart, senderValDesc );
+			_AddMessageType( MessageType.AnimateUpdate, senderValDesc );
+			_AddMessageType( MessageType.AnimateFinish, senderValDesc );
+
+			MsgParam[] senderValResourceDesc = new MsgParam[] { MsgParam.MiscVal, MsgParam.Resource,  MsgParam.SenderSide };
+			_AddMessageType( MessageType.ResourceUpdate, senderValResourceDesc );
+
+			MsgParam[] senderUniqueValDesc = new MsgParam[] { MsgParam.UniqueId, MsgParam.MiscVal, MsgParam.SenderSide };
+			_AddMessageType( MessageType.AddRoadWay, senderUniqueValDesc );
+			_AddMessageType( MessageType.AddSettlement, senderUniqueValDesc );
+			_AddMessageType( MessageType.MessageHandled, senderUniqueValDesc );
 
 			MsgParam[] senderVal2Desc = new MsgParam[] { MsgParam.UniqueId, MsgParam.SettlementId, MsgParam.MiscVal, MsgParam.SenderSide };
-			__AddMessageType( MessageType.StateRequest, senderVal2Desc );
+			_AddMessageType( MessageType.StateRequest, senderVal2Desc );
 
-			__AddMessageType( MessageType.InitPortLocSet, new MsgParam[] { MsgParam.PortId, MsgParam.Resource } );
+			_AddMessageType( MessageType.InitPortLocSet, new MsgParam[] { MsgParam.PortId, MsgParam.Resource } );
 
 	
 		}
@@ -143,7 +160,7 @@ namespace Settlers_of_Catan
 			return ( allTypes );
 		}
 
-		private void	__AddMessageType( MessageType msgType, MsgParam[] accessIds )
+		private void	_AddMessageType( MessageType msgType, MsgParam[] accessIds )
 		{
 Debug.Assert(( mParamIndex[(int)msgType,1] == 0 ), "Already items registered against this MessageType");
 
@@ -416,14 +433,14 @@ Debug.Assert( ( mDailyRemovalIndex < mDailyRemovalList.Length ), "about to stomp
 				packedTime = mCurrMessage.GetTimeStamp();	//	get time stamp of message being broadcast so we get proper inclusion slot
 			}
 Debug.Assert( mLastAddedMsgId == -1, "Potentially destroying queued message id!" );
-			mLastAddedMsgId = __AddMessage( msgType, packedTime );
+			mLastAddedMsgId = _AddMessage( msgType, packedTime );
 
 			_SetMessageData( mLastAddedMsgId, MsgParam.WhichSide, (int)whoFor );
 
 			return ( mLastAddedMsgId );
 		}
 		
-		private int			__AddMessage( MessageType msgType, int packedTime )
+		private int			_AddMessage( MessageType msgType, int packedTime )
 		{
 			Message	next = mFirstInList;
 			Message prev = null;
@@ -510,6 +527,13 @@ Debug.Assert( foundItem, "Attempting to extract invalid unqiue param MsgParam fr
 		private	bool		_SetMessageData( MsgParam paramDesc, int valToSet)
 		{
 			return ( _SetMessageData( mLastAddedMsgId, paramDesc, valToSet ) );
+		}
+
+		private	bool		_SetMessageData( MsgParam paramDesc, bool boolParam )
+		{
+			int intVal = 0;	//assume false by default
+			if ( boolParam ) { intVal = 1; }
+			return ( _SetMessageData( mLastAddedMsgId, paramDesc, intVal ) );
 		}
 
 		public	bool		_SetMessageData(int uniqueIdIndex, MsgParam paramDesc, int valToSet)
@@ -867,13 +891,18 @@ Debug.Assert( ( mBeenPosted == 0 ), "Already posted message" );
 			_PostMessage();
 		}
 
-		public void SendMsgMessageHandled( OWNER sender, MessageType whichMessage, int miscAssocVal ) 
+		public void SendMsgMessageHandledDelayed( int msgTime, OWNER sender, MessageType whichMessage, int miscAssocVal ) 
 		{
-			_AddMessage( OWNER.MANAGER, MessageType.MessageHandled, 0 );
+			_AddMessage( OWNER.MANAGER, MessageType.MessageHandled, msgTime );	//	supports delayed acknowledgement if applicable
 			_SetMessageData( MsgParam.UniqueId, (int)whichMessage );
 			_SetMessageData( MsgParam.MiscVal, miscAssocVal );
 			_SetMessageData( MsgParam.SenderSide, (int)sender );		//	we need to broadcast who sent it, because everybody should listen...
 			_PostMessage();
+		}
+
+		public void SendMsgMessageHandled( OWNER sender, MessageType whichMessage, int miscAssocVal ) 
+		{
+			SendMsgMessageHandledDelayed( 0, sender, whichMessage, miscAssocVal );	// delay of zero so it goes out 'automatically'
 		}
 
 		public void SendMsgStateRequest( OWNER sender, PlayGameMgr.STATE whichState, int settlementid, int miscAssocVal ) 
@@ -886,6 +915,42 @@ Debug.Assert( ( mBeenPosted == 0 ), "Already posted message" );
 			_PostMessage();
 		}
 
+		public void SendMsgAnimateStart( OWNER whoFor ) 
+		{
+			_AddMessage( OWNER.MANAGER, MessageType.AnimateStart, 0 );
+			_SetMessageData( MsgParam.MiscVal, (int)whoFor );
+			_PostMessage();
+		}
+
+		public void SendMsgAnimateUpdate( int msgTime, bool wantThinkingGfx )
+		{
+			_AddMessage( OWNER.MANAGER, MessageType.AnimateUpdate, msgTime );
+			_SetMessageData( MsgParam.MiscVal, wantThinkingGfx );
+			_PostMessage();
+		}
+
+		public void SendMsgAnimateFinish( int msgTime )
+		{
+			_AddMessage( OWNER.MANAGER, MessageType.AnimateFinish, msgTime );
+			_PostMessage();
+		}
+
+		public void SendMsgLogicStateRequest( int msgTime, OWNER sender, SideLogic.LOGIC_STATE stateEnum )
+		{
+			_AddMessage( sender, MessageType.LogicStateRequest, msgTime );
+			_SetMessageData( MsgParam.SenderSide, (int)sender );		//	we need to broadcast who sent it, because everybody should listen...
+			_SetMessageData( MsgParam.MiscVal, (int)stateEnum );
+			_PostMessage();
+		}
+
+		public void SendMsgResourceUpdate( OWNER sender, RESOURCE resource, int quantityMod )
+		{
+			_AddMessage( OWNER._size, MessageType.ResourceUpdate, 0 );
+			_SetMessageData( MsgParam.SenderSide, (int)sender );		//	we need to broadcast who sent it, because everybody should listen...
+			_SetMessageData( MsgParam.MiscVal, quantityMod );
+			_SetMessageData( MsgParam.Resource, (int)resource );
+			_PostMessage();
+		}
 	}
 
 	public	class	MsgFilter
