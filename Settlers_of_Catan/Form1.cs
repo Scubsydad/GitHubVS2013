@@ -252,7 +252,7 @@ namespace Settlers_of_Catan
 			mMessageCenter.SendMsgRandomNumSeed( randSeed );
 
 			mMapManager = new MapManager( mMessageCenter );
-			mPlayGameMgr = new PlayGameMgr( mMessageCenter, mNumOwnersActive, mSideCtrl, mMapManager, mMapPictBox, StateExplainTabs );
+			mPlayGameMgr = new PlayGameMgr( mMessageCenter, mNumOwnersActive, mSideCtrl, mMapManager, mMapPictBox, StateExplainTabs, mMessageHistory );
 
 
 			mMessageCenter.SendMsgInitTerrainRequest( MapTypeCombo.SelectedIndex );

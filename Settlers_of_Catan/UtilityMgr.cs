@@ -3026,17 +3026,7 @@ Debug.Assert( minAcceptableFileVersion >= 0 );
 		
 		public	void	InitArray()
 		{
-			mArray = InitMultiDimensionalArray( mTall, mExtraWide );									//	create a two dimensional array, 'mTall' deep
-		}
-
-		static	public	int[][]	InitMultiDimensionalArray( int rowsTall, int valsAcross )
-		{
-			int[][] mdArray = new int[rowsTall][];
-			for ( int y = 0; y < rowsTall; ++y )
-			{
-				mdArray[y] = new int[valsAcross];
-			}
-			return ( mdArray );
+			mArray = Support.InitMultiDimensionArray( mTall, mExtraWide );									//	create a two dimensional array, 'mTall' deep
 		}
 		
 		public	int[]	GetArrayByRow( int wantedRow )

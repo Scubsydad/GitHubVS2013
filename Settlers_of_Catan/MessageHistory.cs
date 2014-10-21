@@ -64,7 +64,7 @@ Debug.Assert( mValidTasks <= mMsgChecks.Length );
 			}
 		}
 
-	public	void	ToggleAllowInteraction( bool allow )
+		public	void	ToggleAllowInteraction( bool allow )
 		{
 			mMsgDisplay.ToggleAllowInteraction( allow );
 			AllOnButton.Enabled = AllOffButton.Enabled = 

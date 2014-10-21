@@ -265,6 +265,10 @@ namespace Settlers_of_Catan
 					eventSummary += message.desc;
 					++numOfType[(int)message.msgType];
 				}
+				else
+				{
+					--numOfType[(int)message.msgType];
+				}
 			}
 			mMessageOutput.Text = eventSummary;
 			if ( mMsgNumPanel.BackgroundImage != null )
@@ -274,14 +278,22 @@ namespace Settlers_of_Catan
 			Bitmap bmap = new Bitmap( mMsgNumPanel.Width, mMsgNumPanel.Height );
 			Graphics gfx = Graphics.FromImage( bmap );
 			gfx.Clear( System.Drawing.SystemColors.Control );
-			int i = 0, x, y;
+			int		numMsg, i = 0, x, y;
+			Brush	drawBrush;
 			for (; i < mValidTasks; ++i )
 			{
-				if ( numOfType[i] != 0 )
+				numMsg = numOfType[i];
+				if ( numMsg != 0 )
 				{
 					x = mMsgChecks[i].Location.X - mBaseX;
 					y = mMsgChecks[i].Location.Y - mBaseY;
-					gfx.DrawString( numOfType[i].ToString(), mMsgFont, Brushes.Black, x, y );
+					drawBrush = Brushes.Black;
+					if ( numMsg < 0 )
+					{
+						numMsg *= -1;
+						drawBrush = Brushes.Red;		//	display messages that are currently disabled in red, so we know they exist, just not shown
+					}
+					gfx.DrawString( numMsg.ToString(), mMsgFont, drawBrush, x, y );
 				}
 			}
 			mMsgNumPanel.BackgroundImage = bmap;

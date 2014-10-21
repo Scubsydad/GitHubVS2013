@@ -28,7 +28,7 @@ namespace Settlers_of_Catan
 		private ArrayList		mBuildLocs = new ArrayList();
 		private PathFinder		mPathFinder;
 		private LOGIC_STATE		mLogicState = LOGIC_STATE.DORMANT;
-		private int[,]			mNumRescources = new int[(int)OWNER._size,(int)RESOURCE._size];
+		private int[][]			mNumRescources = Support.InitMultiDimensionArray((int)OWNER._size, (int)RESOURCE._size );
 
 		public	SideLogic( OWNER whichSide, LogicKernel logicKernel, HexInfo[] hexInfos )	:	base ( whichSide, false )
 		{
@@ -590,13 +590,16 @@ Debug.Assert( foundLoc );
 			int				numSharedHexes = secondSettlementLoc.GetNumHexesShareSettlement();
 			int				hexId;
 			HexInfo			hexInfo;
-			RESOURCE		earneResource;
+			RESOURCE		earnedResource;
 			for ( int i = 0; i < numSharedHexes; ++i )
 			{
 				hexId = secondSettlementLoc.GetShareSettlementHexId( i );				//	grab each hex that shares this location
 				hexInfo = mHexInfo[hexId];
-				earneResource = hexInfo.GetEarnResource();
-				mMessageCtr.SendMsgResourceUpdate( mWhichSide, earneResource, 1 );
+				earnedResource = hexInfo.GetEarnResource();
+				if ( earnedResource != RESOURCE.INVALID )								//	desert location doesn't spawn resources, don't send msg
+				{
+					mMessageCtr.SendMsgResourceUpdate( mWhichSide, earnedResource, 1 );
+				}
 			}
 		}
 
@@ -632,7 +635,7 @@ Debug.Assert( foundLoc );
 		{
 			if ( sender == mWhichSide )	//	if its our resources being adjusted, just do math in one go, we automatically can 'track it'
 			{
-				mNumRescources[(int)sender,(int)resource] += quantityMod;
+				mNumRescources[(int)sender][(int)resource] += quantityMod;
 			}
 			else // for opponent tracking, call ONCE per resource count, giving mulitple chances to 'hit' rather than throwing EVERYTHING away if 'false'
 			{
@@ -648,7 +651,7 @@ Debug.Assert( foundLoc );
 				{
 					if ( mLogicKernel.CanTrackLogic( sender, trackingIndex ) )								//	see if we can keep track of the resources
 					{
-						mNumRescources[(int)sender,(int)resource] += adjustor;								//	add +1/-1 <x> times to build a potentially partial summary of value
+						mNumRescources[(int)sender][(int)resource] += adjustor;								//	add +1/-1 <x> times to build a potentially partial summary of value
 					}
 				}		
 			}

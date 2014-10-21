@@ -39,9 +39,13 @@ namespace Settlers_of_Catan
 		Bitmap[]			mThinkingBmaps = new Bitmap[] { new Bitmap( "art//blue_thinking.png"), new Bitmap( "art//orange_thinking.png"), new Bitmap( "art//red_thinking.png"), new Bitmap( "art//silver_thinking.png") };
 		System.Timers.Timer	mMsgTimer;
 		bool				mActiveTimer = false, mGamePaused = false;
+		MessageHistory		mMessageHistory;
 
-		public PlayGameMgr( MessageCenter msgCenter, int numPlayers, CONTROL[] control, MapManager mapMgr, PictureBox pictBox, TabControl stateExplainTabs )	:	base ( OWNER.MANAGER, false )
+		public PlayGameMgr( MessageCenter msgCenter, int numPlayers, CONTROL[] control, MapManager mapMgr, PictureBox pictBox, TabControl stateExplainTabs, MessageHistory msgHistory )	:	base ( OWNER.MANAGER, false )
 		{
+			mMessageHistory = msgHistory;
+			mMessageHistory.ToggleAllowInteraction( true );
+
 			Support.TransparentBmaps( mThinkingBmaps );
 
 			mMessageCtr = msgCenter;
@@ -543,10 +547,12 @@ Debug.Assert( turnNumber == mTurnNumber );
 		private void		_StartTimer()
 		{
 			mMsgTimer.Start();
+			mMessageHistory.ToggleAllowInteraction( false );
 		}
 		private void		_StopTimer()
 		{
 			mMsgTimer.Stop();
+			mMessageHistory.ToggleAllowInteraction( true );
 		}
 
 		public	override	void	MsgAnimateStart( int msgTime, OWNER whoFor ) 

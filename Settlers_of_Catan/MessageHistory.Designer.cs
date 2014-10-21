@@ -275,6 +275,7 @@
 			this.AllOffButton.Size = new System.Drawing.Size(75, 20);
 			this.AllOffButton.TabIndex = 136;
 			this.AllOffButton.Text = "All Off";
+			this.AllOffButton.Click += new System.EventHandler(this.MessagesToggle);
 			// 
 			// AllOnButton
 			// 
@@ -283,6 +284,7 @@
 			this.AllOnButton.Size = new System.Drawing.Size(75, 20);
 			this.AllOnButton.TabIndex = 135;
 			this.AllOnButton.Text = "All On";
+			this.AllOnButton.Click += new System.EventHandler(this.MessagesToggle);
 			// 
 			// MsgCheck43
 			// 

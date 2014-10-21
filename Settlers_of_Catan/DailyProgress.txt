@@ -114,25 +114,25 @@ Friday, Oct 17
 - Refactored the 'MessageCenter' class to provide a 'AddMsgSetSettlement' function, which hides all the data organization, and is basically
   the REVERSE of the MsgAddSettlement function which BROADCASTS everything via enums/types etc. This is a cool little organizational cleanup
 
-  Saturday, Oct 18
-  - Its my birthday today! ( hopefully there will be no need to 'cry if I want to' :)  Up at 6AM working, since I woke up, and kids still sleeping.
-  - Fixed bug where a road was drawn twice on the map, once connecting settlement <a> to <b>, then when it processed <b> it draw it again back to <a>
-  - Updated 'PlayGameMgr' to track the possible road locations for the initial settlements, and highlight them on map and track the center point, elipse size, etc
-  - YAY! Got road selection map click working for user character, I'm now ready to 'start the game'
-  - Thank Andrew for recommending 'GitHub', it just saved me when I started to make a refactor and touched variables I should not have, and had a good 'diff' for fix
-  - Updated 'StateRequest' message to pass in a 'SettlementId' and a (already existing) 'MiscVal' so that I could broadcast more relevant information with state change
-  - Updated all the 'SendMsgStateRequest' request and 'MsgStateRequest' function links to support the new param
-  - Added 'GameTurnInit' message & callbacks/triggers, so that each side could receive prompting to initialize itself for the coming turn.
+Saturday, Oct 18
+- Its my birthday today! ( hopefully there will be no need to 'cry if I want to' :)  Up at 6AM working, since I woke up, and kids still sleeping.
+- Fixed bug where a road was drawn twice on the map, once connecting settlement <a> to <b>, then when it processed <b> it draw it again back to <a>
+- Updated 'PlayGameMgr' to track the possible road locations for the initial settlements, and highlight them on map and track the center point, elipse size, etc
+- YAY! Got road selection map click working for user character, I'm now ready to 'start the game'
+- Thank Andrew for recommending 'GitHub', it just saved me when I started to make a refactor and touched variables I should not have, and had a good 'diff' for fix
+- Updated 'StateRequest' message to pass in a 'SettlementId' and a (already existing) 'MiscVal' so that I could broadcast more relevant information with state change
+- Updated all the 'SendMsgStateRequest' request and 'MsgStateRequest' function links to support the new param
+- Added 'GameTurnInit' message & callbacks/triggers, so that each side could receive prompting to initialize itself for the coming turn.
 
-  Sunday, Oct 19
-  - Added 'AnimateStart', 'AnimateUpdate', 'AnimateFinish' messages & callbacks/triggers etc so that I could trigger some timer based anims
-  - Added 'LogicStateRequest' message type & callbacks/triggers so the 'SideLogic' class could process its logics via timed messages
-  - Added 'ResourceUpdate' message so logics/mtnc code can broadcast out changes to resource quantity for the various sides
-  -	Added 'TrackingAccuracy' tuning component so logic classes can determine whether they should be able to keep track/'remember' stuff that the other logics are doing
-  - Added 'LogicKernel::CanTrackLogic' function that takes in a OWNER & logic category index & compares against util val to see if it can store the results of a broadcast
-  - Added 'SideLogic::MsgResourceUpdate' function which tracks resources gained/lost for active side, and does random # die roll check for OTHER CPU opponents
-  - Added 'MessageCenter::SendMsgMessageHandledDelayed' to augment the non delayed one, so we can pass out a 'handled' message at some future time, not only 'now'
-  - Added 'SideLogic::_PrepInitTurnStates' function which will initilize the side logics turn data etc, and triggers an animation cycle timer (not yet thread safe)
+Sunday, Oct 19
+- Added 'AnimateStart', 'AnimateUpdate', 'AnimateFinish' messages & callbacks/triggers etc so that I could trigger some timer based anims
+- Added 'LogicStateRequest' message type & callbacks/triggers so the 'SideLogic' class could process its logics via timed messages
+- Added 'ResourceUpdate' message so logics/mtnc code can broadcast out changes to resource quantity for the various sides
+- Added 'TrackingAccuracy' tuning component so logic classes can determine whether they should be able to keep track/'remember' stuff that the other logics are doing
+- Added 'LogicKernel::CanTrackLogic' function that takes in a OWNER & logic category index & compares against util val to see if it can store the results of a broadcast
+- Added 'SideLogic::MsgResourceUpdate' function which tracks resources gained/lost for active side, and does random # die roll check for OTHER CPU opponents
+- Added 'MessageCenter::SendMsgMessageHandledDelayed' to augment the non delayed one, so we can pass out a 'handled' message at some future time, not only 'now'
+- Added 'SideLogic::_PrepInitTurnStates' function which will initilize the side logics turn data etc, and triggers an animation cycle timer (not yet thread safe)
 
   Monday, Oct 20
 - Added 'AddStartResources' message type so each side can initialize their resources based on the second settlement that was placed
@@ -140,3 +140,11 @@ Friday, Oct 17
 - Updated three different functions that required me to spawn 'Invoke/Delegates' in order to function across threads. Thank goodness for google/stack overflow!
 - Fixed bug in the 'LogicStateRequest' display parse where it incorrectly asked for 'message sender' as a param, rather than 'message owner'
 - Output of game now goes till message time 840 or so, using system timer to spawn stuff at later stages, rather than instantly like the first part of the game. YES!
+- Fixed bug where the 'SideLogic::MsgAddStartResources' call inadvertantly broadcast out a Resource of 'INVALID' which is -1 (Desert), which caused a array insert assert
+- Added 'LogicKernel::ConfirmAccurate' to allow caller to know whether the 'CanTrackLogic' function ever returns false. Not sure if we'll need it, but seems sensible
+- Fixed some bugs in the 'MessageDisplay' class, so that button clicks on message types to activate/hide are handled.
+- Improved 'MessageDisplay' so that if certain category of messages are currently not enabled, the quantity of that type still shows in red so we know they exist at least
+- Added code to enable/disable interactivity of the MessageHistory/MessageDisplay based on the timer being active or not. Unfortunately, this revealed a few other
+  delegate invoking requirements as now more controls are being accessed via threading. Fix tomorrow, should be easy now that I know how to do it.
+ - Added 'Support::InitMultiDimensionArray' function which initializes a 'int[tall][wide]' array by creating a 'wide' array for each instance of 'tall'.
+ - Updated 'SideLogic' class to use above mentioned array type, rather than [,] init type, since its easier to read in debugger

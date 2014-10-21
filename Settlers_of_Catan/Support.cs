@@ -152,6 +152,16 @@ Debug.Assert( uniqueId == adjSettlementId2 );
 			return ( MapDefs.mHexBaseData[byId] );
 		}
 
+		static	public	int[][]		InitMultiDimensionArray( int numDeep, int numAcross )
+		{
+			int[][]	arrayDefs = new int[numDeep][];
+			for ( int i = 0; i < numDeep; ++i )
+			{
+				arrayDefs[i] = new int[numAcross];
+			}
+			return ( arrayDefs );
+		}
+
 		static  public	ArrayList[]	InitMultiDimensionArrayList( int numDeep )
 		{
 			ArrayList[] mdArrayList = new ArrayList[numDeep];

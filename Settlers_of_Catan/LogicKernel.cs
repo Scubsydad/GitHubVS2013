@@ -171,6 +171,13 @@ namespace Settlers_of_Catan
 			return ( roadWayTarget );
 		}
 
+		public	bool	ConfirmAccurate( OWNER forSide, TRACKING_INDEX whichIndex )	// support function in case we ever need to know if it has a chance of failure or not
+		{
+			int	trackingPctVal = mResourceKernel.GetValueFromSegment( mTrackingAcc, (int)whichIndex, (int)forSide );
+			bool isAccurate = ( trackingPctVal == 100 );
+			return ( isAccurate );
+		}
+
 		public	bool	CanTrackLogic( OWNER forSide, TRACKING_INDEX whichIndex )
 		{
 			int	trackingPctVal = mResourceKernel.GetValueFromSegment( mTrackingAcc, (int)whichIndex, (int)forSide );
