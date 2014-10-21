@@ -130,7 +130,7 @@ namespace Settlers_of_Catan
 		private TrackBar[]			mSecondsRange;
 		private TrackBar[]			mUnitIdRange;
 		private Panel				mMsgNumPanel;
-		private	bool				mAllowRefresh = false;
+		private	bool				mTrackBarValInRange, mAllowRefresh = false;
 		private int					mValidTasks;
 		private	int					mBaseX, mBaseY;
 		private Font				mMsgFont;
@@ -295,6 +295,22 @@ namespace Settlers_of_Catan
 			}
 		}
 
+		delegate bool _IsValueInRangeDelegate ( int compareValue, TrackBar[] trackBars );
+		
+		private bool _IsValueInRange( int compareValue, TrackBar[] trackBars )
+		{
+			if ( trackBars[0].InvokeRequired )
+			{
+				trackBars[0].Invoke( new _IsValueInRangeDelegate (_IsValueInRange), new object[]{ compareValue, trackBars} );
+			}
+			else
+			{ 
+				mTrackBarValInRange = ( ( compareValue >= trackBars[0].Value ) &&
+										( compareValue <= trackBars[1].Value ) );
+			}
+			return ( mTrackBarValInRange );	//	since I can't figure out how to return stuff from delegate calls, just use a class bool to store results of check
+		}
+
 		private bool _IsValidMessage( Message message )
 		{
 			bool	isValidMessage = false;						//	assume not valid by default...
@@ -307,37 +323,54 @@ namespace Settlers_of_Catan
 			{
 				if ( mMsgChecks[(int)message.msgType].Checked )	//	message type is wanted?
 				{
-					if ( ( message.messageId >= mMessageIdRange[0].Value ) &&
-						 ( message.messageId <= mMessageIdRange[1].Value ) )
+					if ( ( _IsValueInRange( message.messageId, mMessageIdRange ) ) &&
+					     ( _IsValueInRange( message.timeStamp, mSecondsRange ) ) &&
+					     ( _IsValueInRange( message.uniqueId, mUnitIdRange ) ) )
 					{
-						if ( ( message.timeStamp >= mSecondsRange[0].Value ) &&
-							 ( message.timeStamp <= mSecondsRange[1].Value ) )
-						{
-							if ( ( message.uniqueId >= mUnitIdRange[0].Value ) &&
-								 ( message.uniqueId <= mUnitIdRange[1].Value ) )
-							{
-								isValidMessage = true;
-							}
-						}
+						isValidMessage = true;
 					}
 				}
 			}
 			return ( isValidMessage );
 		}
 
+		delegate void _CheckUpdateSliderDelegate ( int val, TrackBar slider, bool setVal );
+
+		private void _CheckUpdateSlider( int val, TrackBar slider, bool setVal )
+		{
+			if ( slider.InvokeRequired )
+			{
+				slider.Invoke( new _CheckUpdateSliderDelegate (_CheckUpdateSlider), new object[]{ val, slider, setVal} );
+			}
+			else
+			{
+				slider.Maximum = val;
+				if ( setVal )
+				{
+					slider.Value = val;
+				}
+			}
+		}
 		private void _CheckUpdateSliders( int val, TrackBar[] sliders )
 		{
 			if ( val > sliders[0].Maximum )
 			{
-				lock ( sliders[0] )
-				{
-					sliders[0].Maximum = val;
-				}
-				lock ( sliders[1] )
-				{
-					sliders[1].Maximum = val;	//	must set maximum manually first, to ensure 'value' is in range below
-					sliders[1].Value = val;
-				}
+				_CheckUpdateSlider( val, sliders[0], false );
+				_CheckUpdateSlider( val, sliders[1], true );
+			}
+		}
+
+		delegate void _AddMessageTextDelegate ( RichTextBox rtb, string msgToAdd );
+
+		private void    _AddMessageText( RichTextBox rtb, string msgToAdd )
+		{
+			if ( rtb.InvokeRequired )
+			{
+				rtb.Invoke( new _AddMessageTextDelegate (_AddMessageText), new object[]{ rtb, msgToAdd } );
+			}
+			else
+			{ 
+				rtb.Text += msgToAdd;
 			}
 		}
 
@@ -351,23 +384,9 @@ namespace Settlers_of_Catan
 
 			if ( _IsValidMessage( message ) )
 			{
-				lock ( mMessageOutput )
-				{
-					mMessageOutput.Text += message.desc;
-				}
+				_AddMessageText( mMessageOutput, message.desc );
 			}
 		}
-
-
-		//public	override	void	MsgRender( int msgTime )
-		//{
-		//	_AddMessage( new Message( OWNER.INVALID, mMessageStorage.Count, msgTime, MessageType.Render ) );
-		//}
-
-		//public	override	void	MsgCoordOccupied( int msgTime, OWNER side, Point coord, int uniqueId )
-		//{
-		//	_AddMessage( new Message( side, mMessageStorage.Count, msgTime, MessageType.CoordOccupied, coord, string.Format("Unit : {0}", uniqueId ) ) );
-		//}
 
 		public	override	void	MsgRenderMap( int msgTime )
 		{
@@ -398,6 +417,12 @@ namespace Settlers_of_Catan
 		{
 			_AddMessage( new Message( OWNER.MANAGER, mMessageStorage.Count, msgTime, MessageType.AnimateStart, whoFor.ToString() ) );
 		}
+
+		public	override	void	MsgAddStartResources( int msgTime, OWNER whoFor )
+		{
+			_AddMessage( new Message( whoFor, mMessageStorage.Count, msgTime, MessageType.AddStartResources, whoFor.ToString() ) );
+		}
+
 		public	override	void	MsgAnimateUpdate( int msgTime, bool wantThinkingGfx )
 		{
 			string gfxDesc = "Hide Gfx";

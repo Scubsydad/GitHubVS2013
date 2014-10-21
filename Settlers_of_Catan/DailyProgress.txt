@@ -132,3 +132,11 @@ Friday, Oct 17
   - Added 'LogicKernel::CanTrackLogic' function that takes in a OWNER & logic category index & compares against util val to see if it can store the results of a broadcast
   - Added 'SideLogic::MsgResourceUpdate' function which tracks resources gained/lost for active side, and does random # die roll check for OTHER CPU opponents
   - Added 'MessageCenter::SendMsgMessageHandledDelayed' to augment the non delayed one, so we can pass out a 'handled' message at some future time, not only 'now'
+  - Added 'SideLogic::_PrepInitTurnStates' function which will initilize the side logics turn data etc, and triggers an animation cycle timer (not yet thread safe)
+
+  Monday, Oct 20
+- Added 'AddStartResources' message type so each side can initialize their resources based on the second settlement that was placed
+- Updated the 'MessageDisplay' class to make it 'threadsafe'
+- Updated three different functions that required me to spawn 'Invoke/Delegates' in order to function across threads. Thank goodness for google/stack overflow!
+- Fixed bug in the 'LogicStateRequest' display parse where it incorrectly asked for 'message sender' as a param, rather than 'message owner'
+- Output of game now goes till message time 840 or so, using system timer to spawn stuff at later stages, rather than instantly like the first part of the game. YES!

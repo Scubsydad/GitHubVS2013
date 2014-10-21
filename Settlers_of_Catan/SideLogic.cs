@@ -583,7 +583,7 @@ Debug.Assert( foundLoc );
 			}
 		}
 
-		private void _AddInitialResources()
+		public	override	void	MsgAddStartResources( int msgTime, OWNER whoFor )
 		{
 			BuildLoc		secondBuildLoc = _GetBuildLoc( 1 );							//	get our second build location
 			SettlementLoc	secondSettlementLoc = secondBuildLoc.GetSettlementLoc();	//	extract the settlement
@@ -617,12 +617,9 @@ Debug.Assert( foundLoc );
 			mMessageCtr.SendMsgMessageHandledDelayed( 200, mWhichSide, MessageType.GameTurnInit, turnNumber );
 
 		}
+
 		public	override	void	MsgGameTurnInit( int msgTime, OWNER whichSide, int turnNumber )
 		{
-			if ( turnNumber == 0 )	//	if this is 'turn zero' then we need to add our second settlement resources now
-			{
-				_AddInitialResources();
-			}
 			_PrepInitTurnStates( turnNumber );
 		}
 

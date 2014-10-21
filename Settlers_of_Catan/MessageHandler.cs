@@ -69,13 +69,14 @@ namespace Settlers_of_Catan
 
 					case	MessageType.InitDieRollRequest	:	MsgInitDieRollRequest( timeStamp, (_GetMessageData( MsgParam.MiscVal ) != 0 ) );	break;
 
+					case	MessageType.AddStartResources	:	MsgAddStartResources( timeStamp, _GetMessageOwner() );							break;
 					case	MessageType.InitGameSide		:	MsgInitGameSide( timeStamp, _GetMessageOwner() );	break;
 
 					case	MessageType.InitPortLocRequest	:	MsgInitPortLocRequest( timeStamp, (_GetMessageData( MsgParam.MiscVal ) != 0 ) );	break;
 
 					case	MessageType.InitTerrainRequest	:	MsgInitTerrainRequest( timeStamp, (_GetMessageData( MsgParam.MiscVal ) != 0 ) );	break;
 
-					case	MessageType.LogicStateRequest	:	MsgLogicStateRequest( timeStamp, _GetMessageSender(), (SideLogic.LOGIC_STATE)_GetMessageData( MsgParam.MiscVal ) );	break;
+					case	MessageType.LogicStateRequest	:	MsgLogicStateRequest( timeStamp, _GetMessageOwner(), (SideLogic.LOGIC_STATE)_GetMessageData( MsgParam.MiscVal ) );	break;
 
 					case	MessageType.MessageHandled		:	MsgMessageHandled( timeStamp, _GetMessageSender(), (MessageType)_GetMessageData( MsgParam.UniqueId ), _GetMessageData( MsgParam.MiscVal ) );	break;
 
@@ -122,6 +123,7 @@ Debug.Assert( !mAssertIfNotHandled );
 		public	virtual	void	MsgInitDieRollSet( int msgTime, int uniqueId, int dieRoll ) { _ConfirmHandled(); }
 		public	virtual	void	MsgInitPortLocSet( int msgTime, PORT portId, RESOURCE portResource ) { _ConfirmHandled(); }
 		public	virtual	void	MsgInitGameSide( int msgTime, OWNER side ) { _ConfirmHandled(); }
+		public	virtual	void	MsgAddStartResources( int msgTime, OWNER side ) { _ConfirmHandled(); }
 		public	virtual	void	MsgPickRoadWay( int msgTime, OWNER side ) { _ConfirmHandled(); }
 		public	virtual	void	MsgPickSettlement( int msgTime, OWNER side ) { _ConfirmHandled(); }
 		public	virtual	void	MsgMessageHandled( int msgTime, OWNER sender, MessageType whichMessage, int miscVal ) { _ConfirmHandled(); }

@@ -297,6 +297,10 @@ Debug.Assert( firstInQueue == whichSide );				//	always ensure the first one in 
 			}
 			else
 			{
+				for ( int i = 0; i < mNumPlayers; ++i )	//	tell each side to organize their initial resources based on settlement 2 before we start game 'proper'
+				{
+					mMessageCtr.MsgAddStartResources( 0, (OWNER)mTurnOrder[i] );
+				}
 				mMessageCtr.SendMsgGameTurnInit( OWNER.MANAGER, mTurnNumber );
 			}
 		}
@@ -557,7 +561,7 @@ Debug.Assert( turnNumber == mTurnNumber );
 			if ( wantThinkingGfx )
 			{
 				Graphics gfx = Graphics.FromImage( bmap );
-				gfx.DrawImage( mThinkingBmaps[(int)mAnimOwner], 200, 200 );
+				gfx.DrawImage( mThinkingBmaps[(int)mAnimOwner], 300, 250 );
 			}
 		}
 

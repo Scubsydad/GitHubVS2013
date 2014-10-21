@@ -16,6 +16,7 @@ namespace Settlers_of_Catan
 
 		AddRoadWay,
 		AddSettlement,
+		AddStartResources,
 
 		AnimateFinish,
 		AnimateStart,
@@ -115,6 +116,7 @@ namespace Settlers_of_Catan
 			_AddMessageType( MessageType.PickSettlement, whichSideDesc );
 			_AddMessageType( MessageType.InitTurnSide, whichSideDesc );
 			_AddMessageType( MessageType.RenderMap, whichSideDesc );
+			_AddMessageType( MessageType.AddStartResources, whichSideDesc );
 
 			MsgParam[] miscValDesc = new MsgParam[] { MsgParam.MiscVal };
 			_AddMessageType( MessageType.RandomNumSeed, miscValDesc );
@@ -912,6 +914,12 @@ Debug.Assert( ( mBeenPosted == 0 ), "Already posted message" );
 			_SetMessageData( MsgParam.SettlementId, settlementid );
 			_SetMessageData( MsgParam.MiscVal, miscAssocVal );
 			_SetMessageData( MsgParam.SenderSide, (int)sender );		//	we need to broadcast who sent it, because everybody should listen...
+			_PostMessage();
+		}
+
+		public void	MsgAddStartResources( int msgTime, OWNER whoFor )
+		{
+			_AddMessage( whoFor, MessageType.AddStartResources, 0 );
 			_PostMessage();
 		}
 
