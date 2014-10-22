@@ -66,9 +66,10 @@ Debug.Assert( mValidTasks <= mMsgChecks.Length );
 
 		public	void	ToggleAllowInteraction( bool allow )
 		{
-			mMsgDisplay.ToggleAllowInteraction( allow );
-			AllOnButton.Enabled = AllOffButton.Enabled = 
 			mAllowRefresh =	allow;
+			mMsgDisplay.ToggleAllowInteraction( allow );
+			mMsgDisplay.ToggleControlEnabled( AllOnButton, allow );
+			mMsgDisplay.ToggleControlEnabled( AllOffButton, allow );
 			TogglePauseButton( !allow );
 		}
 
@@ -93,7 +94,7 @@ Debug.Assert( mValidTasks <= mMsgChecks.Length );
 
 		public	void	TogglePauseButton( bool isEnabled )
 		{
-			PauseButton.Enabled = isEnabled;
+			mMsgDisplay.ToggleControlEnabled( PauseButton, isEnabled );
 		}
 
 	}

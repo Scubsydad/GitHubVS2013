@@ -20,6 +20,7 @@ namespace Settlers_of_Catan
 			_size
 		};
 
+		SysDefsKernel		mSysDefsKernel;
 		SideLogic[]			mPlayerLogics;
 		MessageCenter		mMessageCtr;
 		int					mTurnNumber = 0, mTimerTicks = 0, mNumPlayers, mHexNumChosen, mSettlementBuildIndex, mSettlementId;
@@ -41,8 +42,9 @@ namespace Settlers_of_Catan
 		bool				mActiveTimer = false, mGamePaused = false;
 		MessageHistory		mMessageHistory;
 
-		public PlayGameMgr( MessageCenter msgCenter, int numPlayers, CONTROL[] control, MapManager mapMgr, PictureBox pictBox, TabControl stateExplainTabs, MessageHistory msgHistory )	:	base ( OWNER.MANAGER, false )
+		public PlayGameMgr( MessageCenter msgCenter, int numPlayers, CONTROL[] control, MapManager mapMgr, PictureBox pictBox, TabControl stateExplainTabs, MessageHistory msgHistory, SysDefsKernel sysDefKernel )	:	base ( OWNER.MANAGER, false )
 		{
+			mSysDefsKernel = sysDefKernel;
 			mMessageHistory = msgHistory;
 			mMessageHistory.ToggleAllowInteraction( true );
 
@@ -305,6 +307,7 @@ Debug.Assert( firstInQueue == whichSide );				//	always ensure the first one in 
 				{
 					mMessageCtr.MsgAddStartResources( 0, (OWNER)mTurnOrder[i] );
 				}
+				mMessageCtr.SendResourceDieRoll( mSysDefsKernel.GetResourceDieRoll() );
 				mMessageCtr.SendMsgGameTurnInit( OWNER.MANAGER, mTurnNumber );
 			}
 		}
@@ -546,8 +549,8 @@ Debug.Assert( turnNumber == mTurnNumber );
 
 		private void		_StartTimer()
 		{
-			mMsgTimer.Start();
 			mMessageHistory.ToggleAllowInteraction( false );
+			mMsgTimer.Start();
 		}
 		private void		_StopTimer()
 		{

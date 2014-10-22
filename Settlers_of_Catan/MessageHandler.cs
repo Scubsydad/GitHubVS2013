@@ -84,6 +84,7 @@ namespace Settlers_of_Catan
 
 					case	MessageType.RandomNumSeed		:	MsgRandomNumSeed( timeStamp, _GetMessageData( MsgParam.MiscVal ) );	break;
 
+					case	MessageType.ResourceDieRoll		:	MsgResourceDieRoll( timeStamp, _GetMessageData( MsgParam.MiscVal ) );	break;
 					case	MessageType.ResourceUpdate		:	MsgResourceUpdate( timeStamp, _GetMessageSender(), (RESOURCE)_GetMessageData( MsgParam.Resource ), _GetMessageData( MsgParam.MiscVal ) );	break;
 
 					case	MessageType.InitTerrainSet		:	MsgInitTerrainSet( timeStamp, _GetMessageData( MsgParam.UniqueId ), (TERRAIN)_GetMessageData( MsgParam.MiscVal ) );	break;
@@ -118,6 +119,7 @@ Debug.Assert( !mAssertIfNotHandled );
 		public	virtual	void	MsgInitTerrainRequest( int msgTime, bool wantRandom ) { _ConfirmHandled(); }
 		public	virtual	void	MsgLogicStateRequest( int msgTime, OWNER sender, SideLogic.LOGIC_STATE stateEnum ) { _ConfirmHandled(); }
 		public	virtual	void	MsgRandomNumSeed( int msgTime, int miscVal ) { _ConfirmHandled(); }
+		public	virtual	void	MsgResourceDieRoll( int msgTime, int resourceDieRoll ) { _ConfirmHandled(); }
 		public	virtual	void	MsgResourceUpdate( int msgTime, OWNER sender, RESOURCE resource, int quantityMod ) { _ConfirmHandled(); }
 		public	virtual	void	MsgInitTerrainSet( int msgTime, int uniqueId, TERRAIN terrain ) { _ConfirmHandled(); }
 		public	virtual	void	MsgInitDieRollSet( int msgTime, int uniqueId, int dieRoll ) { _ConfirmHandled(); }

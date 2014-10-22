@@ -241,16 +241,32 @@ namespace Settlers_of_Catan
 				checkBox.CheckedChanged += new System.EventHandler( _UpdateMessageHistory );
 			}
 		}
+		delegate void ToggleControlEnabledDelegate ( Control control, bool enabled );
+		
+		public void	ToggleControlEnabled( Control control, bool enabled )
+		{
+			if ( control.InvokeRequired )
+			{
+				control.Invoke( new ToggleControlEnabledDelegate (ToggleControlEnabled), new object[]{ control, enabled} );
+			}
+			else
+			{ 
+				control.Enabled = enabled;
+			}
+		}
 
 		public	void	ToggleAllowInteraction( bool allow )
 		{
-			mSecondsRange[0].Enabled = mSecondsRange[1].Enabled = 
-			mMessageIdRange[0].Enabled = mMessageIdRange[1].Enabled = 
-			mUnitIdRange[0].Enabled = mUnitIdRange[1].Enabled = allow;
 			mAllowRefresh =	allow;
-			if ( allow )
+			ToggleControlEnabled( mSecondsRange[0], mAllowRefresh );
+			ToggleControlEnabled( mSecondsRange[1], mAllowRefresh );
+			ToggleControlEnabled( mMessageIdRange[0], mAllowRefresh );
+			ToggleControlEnabled( mMessageIdRange[1], mAllowRefresh );
+			ToggleControlEnabled( mUnitIdRange[0], mAllowRefresh );
+			ToggleControlEnabled( mUnitIdRange[1], mAllowRefresh );
+			if ( mAllowRefresh )
 			{
-				_UpdateMessageHistory( null, null );
+				UpdateMessageHistory();
 			}
 		}
 
@@ -270,7 +286,8 @@ namespace Settlers_of_Catan
 					--numOfType[(int)message.msgType];
 				}
 			}
-			mMessageOutput.Text = eventSummary;
+			_AddMessageText( mMessageOutput, eventSummary, false );	// don't add, do a stomp of entire text string entry
+
 			if ( mMsgNumPanel.BackgroundImage != null )
 			{
 				mMsgNumPanel.BackgroundImage.Dispose();
@@ -372,18 +389,16 @@ namespace Settlers_of_Catan
 			}
 		}
 
-		delegate void _AddMessageTextDelegate ( RichTextBox rtb, string msgToAdd );
+		delegate void _AddMessageTextDelegate ( RichTextBox rtb, string msgToAdd, bool addFlag );
 
-		private void    _AddMessageText( RichTextBox rtb, string msgToAdd )
+		private void    _AddMessageText( RichTextBox rtb, string msgToAdd, bool addFlag )
 		{
 			if ( rtb.InvokeRequired )
 			{
-				rtb.Invoke( new _AddMessageTextDelegate (_AddMessageText), new object[]{ rtb, msgToAdd } );
+				rtb.Invoke( new _AddMessageTextDelegate (_AddMessageText), new object[]{ rtb, msgToAdd, addFlag  } );
 			}
-			else
-			{ 
-				rtb.Text += msgToAdd;
-			}
+			else if ( addFlag ) { rtb.Text += msgToAdd; }
+			else				{ rtb.Text = msgToAdd; }
 		}
 
 		private	void	_AddMessage( Message message )
@@ -396,7 +411,7 @@ namespace Settlers_of_Catan
 
 			if ( _IsValidMessage( message ) )
 			{
-				_AddMessageText( mMessageOutput, message.desc );
+				_AddMessageText( mMessageOutput, message.desc, true );
 			}
 		}
 
@@ -449,6 +464,11 @@ namespace Settlers_of_Catan
 		public	override	void	MsgLogicStateRequest( int msgTime, OWNER sender, SideLogic.LOGIC_STATE stateEnum )
 		{
 			_AddMessage( new Message( sender, mMessageStorage.Count, msgTime, MessageType.LogicStateRequest, stateEnum.ToString() ) );
+		}
+
+		public	override	void	MsgResourceDieRoll( int msgTime, int resourceDieRoll )
+		{
+			_AddMessage( new Message( OWNER.INVALID, mMessageStorage.Count, msgTime, MessageType.ResourceDieRoll, string.Format("Role : {0}", resourceDieRoll ) ) );
 		}
 
 		public	override	void	MsgResourceUpdate( int msgTime, OWNER sender, RESOURCE resource, int quantityMod )

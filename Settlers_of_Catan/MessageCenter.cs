@@ -43,6 +43,7 @@ namespace Settlers_of_Catan
 
 		RandomNumSeed,
 		RenderMap,
+		ResourceDieRoll,
 		ResourceUpdate,
 
 		StateRequest,
@@ -125,7 +126,8 @@ namespace Settlers_of_Catan
 			_AddMessageType( MessageType.InitPortLocRequest, miscValDesc );
 			_AddMessageType( MessageType.GameTurnInit, miscValDesc );
 			_AddMessageType( MessageType.LogicStateRequest, miscValDesc );
-			
+			_AddMessageType( MessageType.ResourceDieRoll, miscValDesc );	
+
 			MsgParam[] hexLocVallDesc = new MsgParam[] { MsgParam.UniqueId, MsgParam.MiscVal };
 			_AddMessageType( MessageType.InitDieRollSet, hexLocVallDesc );
 			_AddMessageType( MessageType.InitTerrainSet, hexLocVallDesc );
@@ -865,6 +867,13 @@ Debug.Assert( ( mBeenPosted == 0 ), "Already posted message" );
 			_AddMessage( OWNER._size, MessageType.InitPortLocSet, 0 );
 			_SetMessageData( MsgParam.PortId, (int)portEnum );
 			_SetMessageData( MsgParam.Resource, (int)portResource );
+			_PostMessage();
+		}
+
+		public void SendResourceDieRoll( int resourceDieRoll ) 
+		{
+			_AddMessage( OWNER._size, MessageType.ResourceDieRoll, 0 );	//	broadcast to all sides
+			_SetMessageData( MsgParam.MiscVal, resourceDieRoll );
 			_PostMessage();
 		}
 

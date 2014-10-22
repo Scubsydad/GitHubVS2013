@@ -134,7 +134,7 @@ Sunday, Oct 19
 - Added 'MessageCenter::SendMsgMessageHandledDelayed' to augment the non delayed one, so we can pass out a 'handled' message at some future time, not only 'now'
 - Added 'SideLogic::_PrepInitTurnStates' function which will initilize the side logics turn data etc, and triggers an animation cycle timer (not yet thread safe)
 
-  Monday, Oct 20
+Monday, Oct 20
 - Added 'AddStartResources' message type so each side can initialize their resources based on the second settlement that was placed
 - Updated the 'MessageDisplay' class to make it 'threadsafe'
 - Updated three different functions that required me to spawn 'Invoke/Delegates' in order to function across threads. Thank goodness for google/stack overflow!
@@ -148,3 +148,11 @@ Sunday, Oct 19
   delegate invoking requirements as now more controls are being accessed via threading. Fix tomorrow, should be easy now that I know how to do it.
  - Added 'Support::InitMultiDimensionArray' function which initializes a 'int[tall][wide]' array by creating a 'wide' array for each instance of 'tall'.
  - Updated 'SideLogic' class to use above mentioned array type, rather than [,] init type, since its easier to read in debugger
+
+Tuesday, Oct 21
+- Fixed up additional delegate/threading issues within the MessageHistory & MessageDisplay classes
+- Added some 'global' tuning data embedded into 'Form1' and the created a 'SysDefKernel' class to reside on top of the raw data
+- Passed the 'SysDefKernel' class to the 'PlayGameMgr' class so it has access to the support function that allows a 'SysDefKernel::GetResourceDieRoll' function
+- Added a 'ResourceDieRoll' MessageType & related callbacks, so that the 'PlayGameMgr' can broadcast out the resource die roll at start of each turn (ignores 7 for now)
+- Updated the 4 'SideLogic' class to listen to the 'MsgResourceDieRoll' message and compare against all their active build locs, and announce resources gained if any
+- Still have some delegate/threading issues pertaining to the main 'bitmap' that is drawn/used in the 'PlayGameMgr' fix tomorrow

@@ -16,6 +16,7 @@ namespace Settlers_of_Catan
 		LOGIC_ORANGE,
 		LOGIC_RED,
 		LOGIC_SILVER,
+		SYSTEM,
 		_size
 	};
 
@@ -122,8 +123,9 @@ namespace Settlers_of_Catan
 	
 	public partial class Form1 : Form
 	{
-//		private	UtilityMgr		mUtilMgr;
-//		private ResourceKernel  mMapEditKernel;
+		private	UtilityMgr		mUtilMgr;
+		private ResourceKernel  mSysDefsResKernel;
+		private SysDefsKernel	mSysDefsKernel;
 		private CONTROL[]		mSideCtrl = new CONTROL[(int)OWNER._size];
 		private ComboBox[]		mSideCtrlCombos;
 		private	bool			mGameActive = false;
@@ -144,13 +146,14 @@ namespace Settlers_of_Catan
 			mSideCtrlCombos = new ComboBox[] { SideCtrlCombo0, SideCtrlCombo1, SideCtrlCombo2, SideCtrlCombo3 };
 
 			new TrackBarAssociation(new TrackBar[] { FirstPlayerTrackBar }, new Label[] { FirstPlayerTrackBarLbl }, new string[] { "Random", "Blue", "Orange", "Red", "Silver" } ); 
-			//mUtilMgr = new UtilityMgr("MapDefs.brk");
+			mUtilMgr = new UtilityMgr( UTIL.SYSTEM, "SystemDefs.brk", false );
 
+			mUtilMgr.RegisterDataSegments("DieRollPct", new DataSegments( new RichTextBox[] { DieRollPct }, 10, 250 ) );
 
-			//if ( mUtilMgr.CheckLoadBrkFile() )
-			//{
-			//	RefreshInternals();
-			//}
+			if ( mUtilMgr.CheckLoadBrkFile() )
+			{
+				RefreshInternals();
+			}
 
 			_InitLogicUtil( OWNER.BLUE,		"Blue.brk" );
 			_InitLogicUtil( OWNER.ORANGE,	"Orange.brk" );
@@ -160,7 +163,8 @@ namespace Settlers_of_Catan
 
 		public	void		RefreshInternals()
 		{
-//			mMapEditKernel = mUtilMgr.GetResourceKernel();
+			mSysDefsResKernel = mUtilMgr.GetResourceKernel();
+			mSysDefsKernel = new SysDefsKernel( mSysDefsResKernel );
 		}
 
 		public  void UpdateUtilDirtyStatus( )
@@ -252,7 +256,7 @@ namespace Settlers_of_Catan
 			mMessageCenter.SendMsgRandomNumSeed( randSeed );
 
 			mMapManager = new MapManager( mMessageCenter );
-			mPlayGameMgr = new PlayGameMgr( mMessageCenter, mNumOwnersActive, mSideCtrl, mMapManager, mMapPictBox, StateExplainTabs, mMessageHistory );
+			mPlayGameMgr = new PlayGameMgr( mMessageCenter, mNumOwnersActive, mSideCtrl, mMapManager, mMapPictBox, StateExplainTabs, mMessageHistory, mSysDefsKernel );
 
 
 			mMessageCenter.SendMsgInitTerrainRequest( MapTypeCombo.SelectedIndex );
@@ -305,6 +309,16 @@ namespace Settlers_of_Catan
 			mLogicUtils[(int)whichSide] = logicUtil;
 
 			return ( logicUtil );
+		}
+
+		private void _SaveFileRequest(object sender, EventArgs e)
+		{
+			mUtilMgr.SaveFileRequest( true );
+		}
+
+		private void _ValidationRequest(object sender, EventArgs e)
+		{
+			mUtilMgr.ValidateAllData();
 		}
 	}
 }

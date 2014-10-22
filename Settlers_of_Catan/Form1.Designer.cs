@@ -67,9 +67,14 @@
 			this.LogicTabOrange = new System.Windows.Forms.TabPage();
 			this.LogicTabRed = new System.Windows.Forms.TabPage();
 			this.LogicTabSilver = new System.Windows.Forms.TabPage();
+			this.richTextBox5 = new System.Windows.Forms.RichTextBox();
+			this.DieRollPct = new System.Windows.Forms.RichTextBox();
+			this.SaveFileButton = new System.Windows.Forms.Button();
+			this.ValidationButton = new System.Windows.Forms.Button();
 			this.Tabs.SuspendLayout();
 			this.PlayGameTab.SuspendLayout();
 			this.StateExplainTabs.SuspendLayout();
+			this.tabPage1.SuspendLayout();
 			this.SettlementHexSelectTab.SuspendLayout();
 			this.SettlementCornerTab.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -132,6 +137,10 @@
 			// tabPage1
 			// 
 			this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
+			this.tabPage1.Controls.Add(this.SaveFileButton);
+			this.tabPage1.Controls.Add(this.ValidationButton);
+			this.tabPage1.Controls.Add(this.DieRollPct);
+			this.tabPage1.Controls.Add(this.richTextBox5);
 			this.tabPage1.Location = new System.Drawing.Point(4, 22);
 			this.tabPage1.Name = "tabPage1";
 			this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -518,6 +527,53 @@
 			this.LogicTabSilver.TabIndex = 3;
 			this.LogicTabSilver.Text = "Silver";
 			// 
+			// richTextBox5
+			// 
+			this.richTextBox5.BackColor = System.Drawing.SystemColors.Control;
+			this.richTextBox5.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.richTextBox5.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.richTextBox5.Location = new System.Drawing.Point(0, 0);
+			this.richTextBox5.Name = "richTextBox5";
+			this.richTextBox5.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
+			this.richTextBox5.Size = new System.Drawing.Size(456, 111);
+			this.richTextBox5.TabIndex = 64;
+			this.richTextBox5.Text = "Tab contains some simple tuning components for running the \'system\'\n\t   2        " +
+    "3        4        5        6        7        8        9        10       11      " +
+    " 12\nDie Roll %";
+			this.richTextBox5.WordWrap = false;
+			// 
+			// DieRollPct
+			// 
+			this.DieRollPct.Location = new System.Drawing.Point(55, 25);
+			this.DieRollPct.Name = "DieRollPct";
+			this.DieRollPct.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
+			this.DieRollPct.Size = new System.Drawing.Size(333, 16);
+			this.DieRollPct.TabIndex = 65;
+			this.DieRollPct.Text = "27     56      83     111    139    168    139    111      83      56      27 s10" +
+    "00";
+			// 
+			// SaveFileButton
+			// 
+			this.SaveFileButton.Font = new System.Drawing.Font("Tahoma", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.SaveFileButton.Location = new System.Drawing.Point(406, -1);
+			this.SaveFileButton.Name = "SaveFileButton";
+			this.SaveFileButton.Size = new System.Drawing.Size(53, 17);
+			this.SaveFileButton.TabIndex = 67;
+			this.SaveFileButton.Text = "Save File";
+			this.SaveFileButton.UseVisualStyleBackColor = true;
+			this.SaveFileButton.Click += new System.EventHandler(this._SaveFileRequest);
+			// 
+			// ValidationButton
+			// 
+			this.ValidationButton.Font = new System.Drawing.Font("Tahoma", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.ValidationButton.Location = new System.Drawing.Point(410, 15);
+			this.ValidationButton.Name = "ValidationButton";
+			this.ValidationButton.Size = new System.Drawing.Size(48, 17);
+			this.ValidationButton.TabIndex = 66;
+			this.ValidationButton.Text = "Validate";
+			this.ValidationButton.UseVisualStyleBackColor = true;
+			this.ValidationButton.Click += new System.EventHandler(this._ValidationRequest);
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -530,6 +586,7 @@
 			this.PlayGameTab.ResumeLayout(false);
 			this.PlayGameTab.PerformLayout();
 			this.StateExplainTabs.ResumeLayout(false);
+			this.tabPage1.ResumeLayout(false);
 			this.SettlementHexSelectTab.ResumeLayout(false);
 			this.SettlementCornerTab.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -583,6 +640,10 @@
 		private System.Windows.Forms.TabPage RoadwayPlotTab;
 		private System.Windows.Forms.PictureBox pictureBox2;
 		private System.Windows.Forms.RichTextBox richTextBox3;
+		private System.Windows.Forms.RichTextBox DieRollPct;
+		private System.Windows.Forms.RichTextBox richTextBox5;
+		private System.Windows.Forms.Button SaveFileButton;
+		private System.Windows.Forms.Button ValidationButton;
 	}
 }
 

@@ -536,15 +536,21 @@ Debug.Assert( foundLoc );
 			}
 		}
 
+		private HexInfo[]	_GetHexInfoForBuildLoc( BuildLoc buildLoc )
+		{
+			return ( _GetHexInfoForSettlement( buildLoc.GetSettlementLoc() ) );
+		}
+
 		private HexInfo[]	_GetHexInfoForSettlement( SettlementLoc settlementLoc )
 		{
-			int numAdjSettlements = settlementLoc.GetNumHexesShareSettlement();
-			HexInfo[]	hexInfos = new HexInfo[numAdjSettlements];
-			for ( int i = 0; i < numAdjSettlements; ++i )
+			int			hexId, numSharedHexes = settlementLoc.GetNumHexesShareSettlement();
+			HexInfo[]	sharedHexes = new HexInfo[numSharedHexes];
+			for ( int hexLoop = 0; hexLoop < numSharedHexes; ++hexLoop )
 			{
-				hexInfos[i] = mHexInfo[ settlementLoc.GetShareSettlementHexId( i ) ];
+				hexId = settlementLoc.GetShareSettlementHexId( hexLoop );
+				sharedHexes[hexLoop] = mHexInfo[hexId];
 			}
-			return ( hexInfos );
+			return ( sharedHexes );
 		}
 
 		private SettlementLoc	_SetSettlementLocOwner( OWNER whichSide, int settlementId )
@@ -585,16 +591,12 @@ Debug.Assert( foundLoc );
 
 		public	override	void	MsgAddStartResources( int msgTime, OWNER whoFor )
 		{
-			BuildLoc		secondBuildLoc = _GetBuildLoc( 1 );							//	get our second build location
-			SettlementLoc	secondSettlementLoc = secondBuildLoc.GetSettlementLoc();	//	extract the settlement
-			int				numSharedHexes = secondSettlementLoc.GetNumHexesShareSettlement();
-			int				hexId;
-			HexInfo			hexInfo;
-			RESOURCE		earnedResource;
-			for ( int i = 0; i < numSharedHexes; ++i )
-			{
-				hexId = secondSettlementLoc.GetShareSettlementHexId( i );				//	grab each hex that shares this location
-				hexInfo = mHexInfo[hexId];
+			BuildLoc	secondBuildLoc = _GetBuildLoc( 1 );							//	get our second build location
+			RESOURCE	earnedResource;
+			HexInfo[]	attacheddHexes = _GetHexInfoForBuildLoc( secondBuildLoc );
+
+			foreach ( HexInfo hexInfo in attacheddHexes )
+			{ 
 				earnedResource = hexInfo.GetEarnResource();
 				if ( earnedResource != RESOURCE.INVALID )								//	desert location doesn't spawn resources, don't send msg
 				{
@@ -608,17 +610,38 @@ Debug.Assert( foundLoc );
 			mTurnNumber = turnNumber;		//	track this in case we want to do different things in 'later turns'?
 
 			mMessageCtr.SendMsgAnimateStart( mWhichSide );	//	start anim cycle for this side...
-			mMessageCtr.SendMsgAnimateUpdate( 2, true  );		//	SHOW the 'thinking' gfx...
+			mMessageCtr.SendMsgAnimateUpdate( 1, true  );		//	SHOW the 'thinking' gfx...
 			mMessageCtr.SendMsgLogicStateRequest( 3, mWhichSide, LOGIC_STATE.RESOURCE_ANALYSIS );
 			mMessageCtr.SendMsgLogicStateRequest( 13, mWhichSide, LOGIC_STATE.BUILD_ANALYSIS );
-			mMessageCtr.SendMsgAnimateUpdate( 50, false  );		//	hide the 'thinking' gfx...
-			mMessageCtr.SendMsgAnimateUpdate( 70, true  );		//	SHOW the 'thinking' gfx...
-			mMessageCtr.SendMsgAnimateUpdate( 120, false  );	//	hide the 'thinking' gfx...
-			mMessageCtr.SendMsgAnimateUpdate( 140, true  );		//	SHOW the 'thinking' gfx...
-			mMessageCtr.SendMsgAnimateFinish( 190 );			//	FINISH anim cycle...
+			mMessageCtr.SendMsgAnimateUpdate( 30, false  );		//	hide the 'thinking' gfx...
+			mMessageCtr.SendMsgAnimateUpdate( 38, true  );		//	SHOW the 'thinking' gfx...
+			mMessageCtr.SendMsgAnimateUpdate( 68, false  );		//	hide the 'thinking' gfx...
+			mMessageCtr.SendMsgAnimateUpdate( 75, true  );		//	SHOW the 'thinking' gfx...
+			mMessageCtr.SendMsgAnimateUpdate( 98, false  );		//	hide the 'thinking' gfx...
+			mMessageCtr.SendMsgAnimateFinish( 99 );				//	FINISH anim cycle...
 
-			mMessageCtr.SendMsgMessageHandledDelayed( 200, mWhichSide, MessageType.GameTurnInit, turnNumber );
+			mMessageCtr.SendMsgMessageHandledDelayed( 100, mWhichSide, MessageType.GameTurnInit, turnNumber );
 
+		}
+
+		public	override	void	MsgResourceDieRoll( int msgTime, int resourceDieRoll )
+		{
+			int			numBuildLocs = mBuildLocs.Count;
+			RESOURCE	earnedResource;
+			HexInfo[]	attacheddHexes;
+
+			for ( int i = 0; i < numBuildLocs; ++i )
+			{
+				attacheddHexes = _GetHexInfoForBuildLoc( _GetBuildLoc( i ) );
+				foreach ( HexInfo hexInfo in attacheddHexes )
+				{ 
+					if ( hexInfo.GetDieRoll() == resourceDieRoll )
+					{
+						earnedResource = hexInfo.GetEarnResource();
+						mMessageCtr.SendMsgResourceUpdate( mWhichSide, earnedResource, 1 );
+					}
+				}
+			}
 		}
 
 		public	override	void	MsgGameTurnInit( int msgTime, OWNER whichSide, int turnNumber )
