@@ -6,10 +6,38 @@ using System.Drawing;
 
 namespace Settlers_of_Catan
 {
-	/// <summary>
-	/// Summary description for MessageCenter.
-	/// </summary>
-	/// 
+	public	class	MsgFilter
+	{
+		public	MessageCenter			Ptr;
+		private	bool[]					mWantedMsg = null;
+		private	MessageBroadcastHandler	mParentHandler;
+
+		public	MsgFilter( MessageCenter msgCtr, MessageBroadcastHandler parentReceiveFunction, MessageType[] wantedMsg )
+		{
+			Ptr = msgCtr;
+			Ptr.RequestMessageNotification( new MessageBroadcastHandler( LocalReceiveFunction ) );
+			mParentHandler = parentReceiveFunction;
+
+			if ( wantedMsg != null )
+			{
+				mWantedMsg = new bool[(int)MessageType._size];
+
+				foreach ( MessageType msgType in wantedMsg )
+				{
+					mWantedMsg[ (int)msgType ] = true;
+				}
+			}
+		}
+
+		public	void LocalReceiveFunction( MessageType msgType, int uniqueMsgId )
+		{
+			if (( mWantedMsg == null ) || ( mWantedMsg[ (int)msgType] ))
+			{
+				mParentHandler( msgType, uniqueMsgId );
+			}
+		}
+	}
+
 	public	enum	MessageType
 	{
 		NA =			-1,
@@ -47,9 +75,6 @@ namespace Settlers_of_Catan
 		ResourceUpdate,
 
 		StateRequest,
-
-
-		SettlementBuilt,
 
 		_size,
 	};
@@ -968,37 +993,21 @@ Debug.Assert( ( mBeenPosted == 0 ), "Already posted message" );
 			_SetMessageData( MsgParam.Resource, (int)resource );
 			_PostMessage();
 		}
-	}
 
-	public	class	MsgFilter
-	{
-		public	MessageCenter			Ptr;
-		private	bool[]					mWantedMsg = null;
-		private	MessageBroadcastHandler	mParentHandler;
-
-		public	MsgFilter( MessageCenter msgCtr, MessageBroadcastHandler parentReceiveFunction, MessageType[] wantedMsg )
+		public	void	AnimTimerRequest( OWNER whoFor, int timerDuration, int numOnCycles, int pctOnVisible )
 		{
-			Ptr = msgCtr;
-			Ptr.RequestMessageNotification( new MessageBroadcastHandler( LocalReceiveFunction ) );
-			mParentHandler = parentReceiveFunction;
-
-			if ( wantedMsg != null )
+			SendMsgAnimateStart( whoFor );	//	start anim cycle for this side...
+			int	cyclesPerAnim = ( timerDuration / numOnCycles );
+			int cyclesOn = ( ( cyclesPerAnim * pctOnVisible ) / 100 );
+			int cycleVal = 1;
+			for ( int animCycle = 0; animCycle < numOnCycles; ++animCycle, cycleVal += cyclesPerAnim )
 			{
-				mWantedMsg = new bool[(int)MessageType._size];
-
-				foreach ( MessageType msgType in wantedMsg )
-				{
-					mWantedMsg[ (int)msgType ] = true;
-				}
+				SendMsgAnimateUpdate( cycleVal, true  );					//	SHOW the 'thinking' gfx...
+				SendMsgAnimateUpdate( ( cycleVal + cyclesOn ), false  );	//	SHOW the 'thinking' gfx...
 			}
+			SendMsgAnimateFinish( timerDuration );	//	FINISH anim cycle...
 		}
 
-		public	void LocalReceiveFunction( MessageType msgType, int uniqueMsgId )
-		{
-			if (( mWantedMsg == null ) || ( mWantedMsg[ (int)msgType] ))
-			{
-				mParentHandler( msgType, uniqueMsgId );
-			}
-		}
 	}
+
 }

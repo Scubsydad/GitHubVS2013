@@ -468,7 +468,7 @@ namespace Settlers_of_Catan
 
 		public	override	void	MsgResourceDieRoll( int msgTime, int resourceDieRoll )
 		{
-			_AddMessage( new Message( OWNER.INVALID, mMessageStorage.Count, msgTime, MessageType.ResourceDieRoll, string.Format("Role : {0}", resourceDieRoll ) ) );
+			_AddMessage( new Message( OWNER.INVALID, mMessageStorage.Count, msgTime, MessageType.ResourceDieRoll, string.Format("Die Roll : {0}", resourceDieRoll ) ) );
 		}
 
 		public	override	void	MsgResourceUpdate( int msgTime, OWNER sender, RESOURCE resource, int quantityMod )

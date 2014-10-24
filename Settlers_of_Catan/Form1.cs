@@ -45,6 +45,7 @@ namespace Settlers_of_Catan
 		CITY,
 		ROAD,
 		SETTLEMENT,
+		DEV_CARD,
 		_size
 	};
 

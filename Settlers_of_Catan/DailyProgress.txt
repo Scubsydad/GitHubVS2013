@@ -156,3 +156,15 @@ Tuesday, Oct 21
 - Added a 'ResourceDieRoll' MessageType & related callbacks, so that the 'PlayGameMgr' can broadcast out the resource die roll at start of each turn (ignores 7 for now)
 - Updated the 4 'SideLogic' class to listen to the 'MsgResourceDieRoll' message and compare against all their active build locs, and announce resources gained if any
 - Still have some delegate/threading issues pertaining to the main 'bitmap' that is drawn/used in the 'PlayGameMgr' fix tomorrow
+
+-Wednesday, Oct 22
+- Refactored the 'AnimTimer' code to make it a public function in 'MessageCenter' that automates the on/off cycles via a series of params.
+- Added a few more 'SideLogic::LOGIC_STATE' enums to handle housekeeping at the start of a turn for each of the sides
+- Added a new source file called 'SideLogicAnalysis' that contains the 'housekeeping/logic' code for the 'SideLogic' class and  largely does NOT contain 'Messaging' stuff
+- Removed the 'SettlementBuilt' message type since I've already supported/used the 'AddSettlement' message for the 2 initial builds
+- Added the 'DEV_CARD' to the 'ASSET' enum, since it can also be purchased via resources (but doesn't physically sit 'on map)
+- Populated 'SideLogicAnalysis.cs' with some prototypes to reflect the logic state functions that need to be completed. Fill in tomorrow.
+- strange, the 'timer' issue pertainging to 'graphics object in use' didn't happen consistently today, not sure if I made changes that helped resolve, or its intermitent'
+
+Thursday, Oct 23
+

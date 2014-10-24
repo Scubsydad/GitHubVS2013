@@ -7,14 +7,16 @@ using System.Windows.Forms;
 
 namespace Settlers_of_Catan
 {
-	public class SideLogic	:	MessageHandler
+	public partial class SideLogic	:	MessageHandler
 	{
 		public enum LOGIC_STATE
 		{
 			DORMANT,
 			RESOURCE_ANALYSIS,
 			BUILD_ANALYSIS,
-
+			TRADE_PRIORITY,
+			VICTORY_ANALYSIS,
+			ROADWAY_PLOTTING,
 		};
 
 		private OWNER			mWhichSide;
@@ -29,6 +31,7 @@ namespace Settlers_of_Catan
 		private PathFinder		mPathFinder;
 		private LOGIC_STATE		mLogicState = LOGIC_STATE.DORMANT;
 		private int[][]			mNumRescources = Support.InitMultiDimensionArray((int)OWNER._size, (int)RESOURCE._size );
+		private int[][]			mBuildPcts;
 
 		public	SideLogic( OWNER whichSide, LogicKernel logicKernel, HexInfo[] hexInfos )	:	base ( whichSide, false )
 		{
@@ -609,19 +612,23 @@ Debug.Assert( foundLoc );
 		{
 			mTurnNumber = turnNumber;		//	track this in case we want to do different things in 'later turns'?
 
-			mMessageCtr.SendMsgAnimateStart( mWhichSide );	//	start anim cycle for this side...
-			mMessageCtr.SendMsgAnimateUpdate( 1, true  );		//	SHOW the 'thinking' gfx...
-			mMessageCtr.SendMsgLogicStateRequest( 3, mWhichSide, LOGIC_STATE.RESOURCE_ANALYSIS );
-			mMessageCtr.SendMsgLogicStateRequest( 13, mWhichSide, LOGIC_STATE.BUILD_ANALYSIS );
-			mMessageCtr.SendMsgAnimateUpdate( 30, false  );		//	hide the 'thinking' gfx...
-			mMessageCtr.SendMsgAnimateUpdate( 38, true  );		//	SHOW the 'thinking' gfx...
-			mMessageCtr.SendMsgAnimateUpdate( 68, false  );		//	hide the 'thinking' gfx...
-			mMessageCtr.SendMsgAnimateUpdate( 75, true  );		//	SHOW the 'thinking' gfx...
-			mMessageCtr.SendMsgAnimateUpdate( 98, false  );		//	hide the 'thinking' gfx...
-			mMessageCtr.SendMsgAnimateFinish( 99 );				//	FINISH anim cycle...
+			int	confirmedMsgTime = 0;		//	assume user controlled by default
+			if ( !mIsUserControlled )		//	if this side is NOT user controlled, then run the turn prep cycle
+			{ 
+// trigger an animation cycle timer for one second (the '100'% of a second. Flash anim 4 times, 80% of time anim is visible
+				confirmedMsgTime = 100;
+				mMessageCtr.AnimTimerRequest( mWhichSide, confirmedMsgTime, 4, 80 );	//	request an anim cylce
+// run these <x> logic analysis for the side spread out over time, so it will never 'chug' the game with timer active
+				mMessageCtr.SendMsgLogicStateRequest( 10, mWhichSide, LOGIC_STATE.RESOURCE_ANALYSIS );
+				mMessageCtr.SendMsgLogicStateRequest( 20, mWhichSide, LOGIC_STATE.BUILD_ANALYSIS );
+				mMessageCtr.SendMsgLogicStateRequest( 30, mWhichSide, LOGIC_STATE.TRADE_PRIORITY );
+				mMessageCtr.SendMsgLogicStateRequest( 40, mWhichSide, LOGIC_STATE.VICTORY_ANALYSIS );
+				mMessageCtr.SendMsgLogicStateRequest( 50, mWhichSide, LOGIC_STATE.ROADWAY_PLOTTING );
 
-			mMessageCtr.SendMsgMessageHandledDelayed( 100, mWhichSide, MessageType.GameTurnInit, turnNumber );
-
+				mMessageCtr.SendMsgLogicStateRequest( 95, mWhichSide, LOGIC_STATE.DORMANT );	//	turn off when its done, so the state isn't left dangling
+// once we've done these analysis steps, tell the play game manager we are done our turn prep
+			}
+			mMessageCtr.SendMsgMessageHandledDelayed( confirmedMsgTime, mWhichSide, MessageType.GameTurnInit, turnNumber );
 		}
 
 		public	override	void	MsgResourceDieRoll( int msgTime, int resourceDieRoll )
@@ -652,6 +659,17 @@ Debug.Assert( foundLoc );
 		public	override	void	MsgLogicStateRequest( int msgTime, OWNER sender, SideLogic.LOGIC_STATE stateEnum )
 		{
 			mLogicState = stateEnum;
+			switch ( mLogicState )
+			{
+				default									:	Debug.Assert( false );			break;
+
+				case	LOGIC_STATE.RESOURCE_ANALYSIS	:	_DoResourceAnalysis();			break;
+				case	LOGIC_STATE.BUILD_ANALYSIS		:	_DoBuildAnalysis();				break;
+				case	LOGIC_STATE.TRADE_PRIORITY		:	_DetermineTradePriority();		break;
+				case	LOGIC_STATE.VICTORY_ANALYSIS	:	_DoVictoryAnalysis();			break;
+				case	LOGIC_STATE.ROADWAY_PLOTTING	:	_DoRoadWayPlotting();			break;
+				case	LOGIC_STATE.DORMANT				:	/* do nothing in this state */	break;
+			}
 		}
 
 		public	override	void	MsgResourceUpdate( int msgTime, OWNER sender, RESOURCE resource, int quantityMod )

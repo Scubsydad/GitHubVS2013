@@ -18,7 +18,9 @@ namespace Settlers_of_Catan
 			mWhichResource = res;
 			mQuantity = num;
 		}
-	
+		public	RESOURCE	GetResource()	{ return ( mWhichResource ); }
+		public	int			GetQuantity()	{ return ( mQuantity ); }
+
 		private	RESOURCE	mWhichResource;
 		private	int			mQuantity;
 	}
@@ -233,14 +235,20 @@ Debug.Assert( uniqueId == adjSettlementId2 );
 			{
 				requirements = new Asset[] { new Asset( RESOURCE.BRICK, 1 ),
 											 new Asset( RESOURCE.LUMBER, 1 ),
-											 new Asset( RESOURCE.WOOL, 1 ),
-											 new Asset( RESOURCE.GRAIN, 1 ) };
+											 new Asset( RESOURCE.GRAIN, 1 ),
+											 new Asset( RESOURCE.WOOL, 1 ) };
 			}
-			else //if ( buildType == ASSET.CITY )
+			else if ( buildType == ASSET.CITY )
 			{
-				Debug.Assert( buildType == ASSET.CITY );
-				requirements = new Asset[] { new Asset( RESOURCE.ORE, 3 ),
-											 new Asset( RESOURCE.GRAIN, 2 ) };
+				requirements = new Asset[] { new Asset( RESOURCE.GRAIN, 2 ),
+											 new Asset( RESOURCE.ORE, 3 ) };
+			}
+			else // if ( buildType == ASSET.DEV_CARD )
+			{
+Debug.Assert( buildType == ASSET.DEV_CARD );
+				requirements = new Asset[] { new Asset( RESOURCE.WOOL, 1 ),
+											 new Asset( RESOURCE.GRAIN, 1 ),
+											 new Asset( RESOURCE.ORE, 1 ) };
 			}
 			return ( requirements );
 		}
